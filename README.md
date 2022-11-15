@@ -1,4 +1,4 @@
-# [Regression Analysis and Predictive Modeling using R](https://github.com/mohammadwasiq0/Regression-Analysis-and-Predictive-Modeling-using-R)
+# [Regression Analysis and Predictive Modeling using R (DSM- 1003)](https://github.com/mohammadwasiq0/Regression-Analysis-and-Predictive-Modeling-using-R)
 
 I'm very very thankful to 
 
