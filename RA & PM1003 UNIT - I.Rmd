@@ -1,0 +1,1253 @@
+---
+title: "DSM-1003 Regression Analysis and Predictive Modeling"
+author: "Mohammad Wasiq"
+date: "29/01/2022"
+output: html_document
+---
+
+# Regression Analysis and Predictive Modeling
+Book :-: **An Introduction to Statistical Learning with Applications in R**
+<br>Teacher :-: **Prof. Ahmedur Rehman Sir**
+<br>Composer :-: **Mohammad Wasiq** *(Data Science)*
+<br>**Unit-I :-** **Linear Models:** Simple linear regression, estimating the coefficients, accuracy of the coefficient  estimates, model accuracy. Multiple linear regression: regression coefficients, qualitative  Predictors, comparison of linear regression with K-Nearest Neighbours .
+
+# Linear Models
+* **Linear Models:** Summarising the data in the forms of equation is known as Linear Models.
+<br>* **Regression Analysis**: Regression Analysis is a simple method for ivestigation relationship among variables. 
+
+## Simple Linear Regression / SLR
+Model :- $y = \beta_0 + \beta_1x_1 +\epsilon$
+<br>where , $y$ is `Response variable / Outcome of Study / Dependent Variable`
+<br> $\beta_0$ is `Intercept`
+<br>$\beta_1$ is `Slope` i.e. $\frac{\Delta y}{\Delta x}$
+<br>$x_1$ is `Explanatory variable / Predictor / Regressor / Independent Variable` 
+<br>$\epsilon$ is `Error`
+
+1. **Response Variable$(y)$:** A response variable measures an outcome of a study.
+2. **Explanatory Variable$(x)$:** Explanatory variable explains or cause change in the response variable.
+<br>Ex- Beer Drinking and Blood Alcohol Level.
+<br>How does drinking beer affect the level of alcohol in our blood.
+<br>Model: Blood Alcohol Level(y)=$\beta_0(intercept)+\beta_1(slope)*Beer- Drink(x)+\epsilon$
+3. **Slope$(\beta_1)$:** $\beta_1=\frac{\Delta y}{\Delta x}$ is slope, the amount by which $y$ changes, when $x$ changes by one unit.
+<br>The slope is an important numerical description of the relationship b/w two variables.
+<br>Ex- $Weight=\hat{\beta_0}+\hat{\beta_1}Age$ $\Rightarrow$ Weight(kg) =3+0.2 Age(yrs)
+<br>*Interpretation*- If age changes by one unit(i.e. 1 year) then weight changes by 0.2 kg.
+4. **Intercept$(\beta_0)$:** $\beta_0$ is the intercept , the value of $y$ when $x=0$.
+Prediction: we can use a regression line to predict the response $y$ for a specific value of the explanatory variable $x$.
+5. **Residual:* Observed(y) - Predict(y) $\Rightarrow (y-\hat{y})$
+
+6. **Assumption of Linear Model**
+<br>* **Linear in Parameter:** The model (A) is linear in the parameters $\beta_0$ & $\beta_1$.
+<br>* **Random Sampling:** We have a random sample of n observation i.e. we draw samples from the population by simple random sampling method .
+<br>* **Normality:** The error will follow normal distribution with $mean=0$ & $variance=\sigma^2$ i.e. X~ $N(0,\sigma^2)$
+<br>* **Homoscedasticity:** The error has the same variance given any values of the explanatory variables. i.e. Variance is constant at every value x. $\Rightarrow V(e|x_1,x_2....x_n)=\sigma^2$
+<br>* **No Perfect Multicollinearity/No Auto Correlation:** In the Model(A), there is no perfect linear relationship b/w regression.(That's why we call $x$ is independent variable) i.e. $Cov(e_i,e_j)=0$
+
+7. **Some Other Definition**:-
+<br> * **Error:** Error of the dataset is the difference b/w the observed value and the unobserved value.
+<br> * **Residuals:** Residual is calculated after running the regression model and is the difference b/w observed value and the estimated value.
+$e_i= (y_i-\hat{y_i})=y_i-(\hat{\beta_0}+\hat{\beta_1}x)$
+<br> * **Sum of Squares:** Sum of squares is one of the most important output in regression analysis.
+<br>The general rule is that a smaller sum of squares indicate a better model,as there is less variation in the data.
+<br> * **Coefficient of Determination / $R^2-Value$** It can be noted that a fitted model can be said to be good model when residuals are small for the measure of Goodness of Model, we use the following formula:
+<br>$R^2=\frac{SSR}{SST}=1-\frac{SS_{res}}{SST}$ , this is called, the coefficient of determination.
+<br>The ratio $\frac{SSR}{SST}$ describe the proportion of variability i.e. explained by the regression in relation to the total varialbility of $y$ .
+<br>The ratio $\frac{SS_{res}}{SST}$ describe the proportion of variability that is not explained by the regression.
+<br>The value of $R^2$ lies $0 \le R^2 \le 1$.
+<br>$R^2=0$, indicates that poorest fit of the model.
+<br>$R^2=1$, indicates that best fit of the model.
+<br>$R^2=0.95$, indicates that 95% of the variation in $y$ is explained by $R^2$. In simple words, the model is 95% good .
+<br>Drawbacks of $R^2$- As $R^2$ always increase with an increase in the no. of explanatory vaiables in the model.The main drawback of this property is that even when the irrelevant explanatory variables. are odded in the model, $R^2$ still increases.
+This indicates that the model is getting better, which is not really correct.
+With a purpose of correction in the overly optimstic picture ,Adjusted $R^2$, denoted by $R_{adj}^2$ is used , which is defined as:
+<br>$R_{adj}^2=1-\frac{SS_{res}/(n-k-1)}{SST/(n-1)}$ OR $R_{adj}^2=1-\frac{SS_{res}}{SST} \times \frac{(n-1)}{(n-k-1)}$ OR <br>$R_{adj}^2=1-\frac{n-1}{n-k-1}(1-R^2)$
+
+8. **Types of Sum of Square**:-
+<br>(i).*Total Sum of Square(SST)*: $\sum_{i=1}^n(y_i-\bar{y})^2$ where $y_i$=value in a sample and $\bar{y}$=mean value of the sample
+<br>(ii). *Regression Sum of Square(SSR)*: $\sum_{i=1}^n(\hat{y_i}-\bar{y})^2$ , where $\hat{y_i}$=value estimated by regression line. and $\bar{y}$=Mean value of the sample.
+<br>$SSR \propto \frac{1}{fitting-of-model}$
+<br>(iii). *Residual Sum of Square(SSres)*: $SS_{res}=\sum_{i=1}^n (y_i-\hat{y_i})^2$ ,where $y_i$=Observed Value and $\hat{y_i}$=Estimated by regression line
+<br>$SS_{res} \propto \frac{1}{Explanation-of-Data}$
+<br>$SST=SSR+SS_{res}$
+
+9. Hypothesis of SLR:
+<br> * **Null Hypothesis** $H_0:\beta_0=\beta_{00}$
+<br> * **Alternative Hypothesis** $H_1:\beta_0\neq \beta_{00}$
+
+**Accuracy of the Model :**
+
+1. **Residual Standard Error (RSE) :** The RSE is considered a measure of the lack of fit of the model to the data. If the predictions obtained using the model are very close to the true outcome values—that is, if $\hat{y_i} \approx y_i$ for $i = 1,...,n$ then *RSE* will be small, and we can conclude that the model fits the data very well. On the other hand, if $\hat{y_i}$ is very far from $y_i$ for one or more observations, then the RSE may be quite large, indicating that the model doesn’t fit the data well.
+
+2. **$R^2$ Statistics :** The RSE provides an absolute measure of lack of fit of the model to the data. But since it is measured in the units of Y , it is not always clear what constitutes a good RSE. The $R^2$ statistic provides an alternative measure of fit. It takes the form of a *proportion* the proportion of variance explained and so it always takes on a value between 0 and 1, and is independent of the scale of Y .
+
+**Linear Model with R**
+<br>**Syntax -:** $lm(formula, \quad data)$
+
+### SLR with Advertising Data
+* Here we  fit the Simple Linear Models of Advertising Data .
+<br>Our 1st model is between sales and TV
+<br>$Sales = \beta_0 + \beta_1(TV) + \epsilon$
+```{r , warning=FALSE}
+# library(ISLR)
+# Watch the dataset in a particular package
+# data(package = "ISLR") 
+
+# Load advertising dataset
+library(readr)
+library(ggplot2)
+advertising <- read_csv("Advertising.csv")
+names(advertising)
+
+ggplot(advertising , aes(TV , sales)) + geom_point() + geom_line() + geom_smooth(method = "lm" , se = F)
+
+# linear model b/w sale ~ Tv
+sale_tv <- lm(sales ~ TV , data = advertising)
+sale_tv
+
+# Summary  of our Model
+summary(sale_tv)
+```
+* **Fitted Model-:** $Sales = 7.03 + 0.047(TV)$
+<br>* The value of $R^2$ is 0.61 ,which tells that our fitted **61%**  good .  **OR**
+<br>**61%** of variability is explained in our model , so our model is quite good .
+
+**Our 2nd Model b/w Sales and Radio**
+<br>$y= \beta_0 + \beta_1(Radio) + \epsilon$
+```{r}
+ggplot(advertising , aes(radio , sales)) + geom_point() + geom_line() + geom_smooth(method = "lm" , se = F)
+
+# Linear Model b/w Sales and Rado
+sale_radio <- lm(sales ~ radio , advertising)
+sale_radio
+
+# Summary
+summary(sale_radio)
+```
+* **Fitted Model-:** $Sales = 9.31 + 0.20(Radio)$
+<br>* The value of $R^2$ is 0.33 ,which tells that our fitted **33%**  good that means our fill model is Bad .  **OR**
+<br>**33%** of variability is explained in our model , so ou model is very bad .
+
+**Our 3rd Model b/w Sales and Newspaper**
+<br>$y= \beta_0 + \beta_1(Newspaper) + \epsilon$
+```{r}
+ggplot(advertising , aes(newspaper , sales)) + geom_point() +  geom_smooth(method = "lm" , se = F)
+
+# Linear Model b/w Sales and Radio
+sale_news <- lm(sales ~ newspaper , advertising)
+sale_news
+
+# Summary
+summary(sale_news)
+```
+
+* **Fitted Model-:** $Sales = 12.35 + 0.054(Newspaper)$
+<br>* The value of $R^2$ is 0.052 ,which tells that our fitted **0.052%**  good that means our fill model is very Bad .  **OR**
+<br>**5%** of variability is explained in our model , so ou model is very bad .
+
+### SLR  with Marketing Data
+This **marketing** data from **datarium** package.
+<br>In this data there are three advertising medias (youtube, facebook and newspaper) on sales. Data are the advertising budget in thousands of dollars along with the sales. The advertising experiment has been repeated 200 times.
+
+1. **Model :** $sales = \beta_o + \beta_1(youtube) + \epsilon$
+```{r , warning=F}
+library(datarium)
+data(marketing)
+names(marketing)
+
+ggplot(marketing , aes(youtube , sales)) + geom_point() + geom_line() + geom_smooth(method = "lm" , se = F)
+
+sale_yt <- lm(sales ~ youtube , data = marketing)
+
+summary(sale_yt)
+```
+
+* **Fitted Model:*** $sales = 8.84 + 0.048(YouTube)$
+<br>* **Interpretation :** One advertising on *YouTube* increase the *Sale* by 0.048 or *4.8%* .
+<br>* **Model Accuracy :** The value of $R^2 = 0.61$ , it's mean that our model is *61%* good . 
+<br>Our model is just good.
+
+2. **MOdel :** $Sales = \beta_0 + \beta_1(Facebook) + \epsilon$
+```{r}
+ggplot(marketing , aes(facebook , sales)) + geom_point() + geom_smooth(method = "lm" , se = F)
+
+sale_face <- lm(sales ~ facebook , data = marketing)
+
+summary(sale_face)
+```
+
+* **Fitted Model:*** $sales = 11.17 + 0.202(Facebook)$
+<br>* **Interpretation :** One advertising on *Facebook* increase the *Sale* by 0.2 or *20%* .
+<br>* **Model Accuracy :** The value of $R^2 = 0.33$ , it's mean that our model is *33%* good .
+<br>Our model is not good .
+
+3. **Model:** $Sales = \beta_0 + \beta_1(Newspaper) + \epsilon$
+```{r}
+ggplot(marketing , aes(newspaper , sales)) + geom_point() + geom_line() + geom_smooth(method = "lm" , se = F)
+
+sale_news <- lm(sales ~ newspaper , marketing)
+
+summary(sale_news)
+```
+
+* **Fitted Model:*** $sales = 14.82 + 0,055(Newspaper)$
+<br>* **Interpretation :** One advertising on *Newspaper* increase the *Sale* by 0.05 or *5%* .
+<br>* **Model Accuracy :** The value of $R^2 = 0.052$ , it's mean that our model is *5%* good .
+<br>Our model is very bad . 
+
+### SLR with Forbes Data
+
+**Model :** $bp = \beta_0 + \beta_1(pres) + \epsilon$
+```{r , warning=F}
+library(MASS)
+data(forbes)
+# dim(forbes)
+# names(forbes)
+
+library(ggplot2)
+ggplot(forbes , aes(pres , bp)) + geom_point() + geom_line() + geom_smooth(method = "lm" , se = F)
+
+lm_forbes <- lm(bp ~ pres , data = forbes)
+summary(lm_forbes)
+```
+* **Fitted Model :** $bp = 155 + 1.9(pres)$
+<br>* **Interpretation :** bp increase by 1.9 , if the press increase by one unit .
+<br>* **Model Accuracy :** The value of $R^2 = 0.99$ , it's mean that our model is *99%* good .
+
+### SLR with Trees Data
+**Model:** $Volume = \beta_0 + \beta_1(Girth)+ \epsilon$
+
+1. **Correlation b/w Girth and Volume of Trees Data**
+```{r}
+cor(trees$Girth , trees$Volume)
+```
+The value of correlation is $0.967$ , which is very close to 1. So , we can say that there is a positive correlation b/w Girth and Volume .
+<br>We can also see this **Graphically**
+
+```{r}
+ggplot(trees , aes(Girth , Volume)) + geom_point() + geom_line() + geom_smooth(method = "lm" , se = F)
+```
+
+After seeing the *Graph* , we can easily say that there is linear relationship b/w *Girth* and *Volume* because most points are linear and also we a approximately straight .
+<br>To prove that we fit the linear model .
+
+```{r}
+lm_girth <- lm(Volume ~ Girth , data = trees) 
+summary(lm_girth)
+```
+* **Complete Interpretation :**
+
+* **Fitted Model :** $Volume = -36.94 + 5.06(Girth)$
+<br> It means a change of one unit in *Girth* will bring **5.06** units to change in *Volume* . **OR**
+<br>If the *Girth* increase by one unit then the *Volume* will increase by **5.06** units . 
+
+* Ths **Std.Error** is variability to expect in coefficient which captures sampling variability so the variation in *intercept* can be $3.36$ and variation in *Girth* will be $0.24$ not more than that .
+
+* **T value :** t-value is coefficient divided by standard error it is basically how big is estimated relative to error bigger the coefficient relative to *Std.Error* the bigger that t score and t score comes with a p-value because its a distribution p-value is how significantly significant the variable is to the model for a *Confidence Interval* of $95%$ we will compare this value with $\alpha$ which will be $0.05$ , so in our case *p-value* of both intercept and Girth is less than $\alpha$ ($\alpha = 0.05$) this implies that both are statistically significant to iur model .
+
+* **Residual Standard Error** or the std. error of the model is basically the average error for the model which is $4.252$ in our case and it means that our model can be off by on an average of **4.252** , while predicting the Volume lesser the error the better the model while predicting . 
+
+* **Model Accuracy :** The value of $R^2 = 0.94$ , it's mean that our model is *94%* good .
+
+* **F - statistics** is the ratio of the mesn sum square of the model and mean sum square of the error. In othe word it's the ratio of how   
+well the model is doing and what the errror is doing and the higher the F-value is the better the model is doing on compared to error .
+<br>*1* is the df of numerator and *29* is the df of the F-statistics .
+ 
+**Predict the value Volume at Girth 10 .**
+```{r}
+p =as.data.frame(10)
+colnames(p) = "Girth"
+
+predict(lm_girth  , newdata = p)
+```
+So, the predicted value of the *Volume* is $13.71$ at *Girth* 10 .
+
+### SLR by Own Function
+Here we fit Simple Linear Regression model **Model:** $Volume = \beta_0 + \beta_1(Height) + \epsilon$ by our own Function .
+```{r , warning=F}
+slr <- function(x , y){
+# A function which returns simple Regression Analysis
+X <- cbind(1 , x)  # Model Matrix
+
+p1 <- ncol(X)
+n <- nrow(X)
+
+# (X^T X)
+xtx <- crossprod(X) 
+
+# (X^T y)
+xty <- crossprod(X , y) 
+
+# beta= (X^T y)^-1 (X^T y)
+beta <- solve(xtx , xty)  
+
+# Resid = y-X*beta
+resid <- y - X %*% beta   
+
+# Residual Sum Square
+rss <- sum(resid^2)
+
+# Mean Sum Square
+msresid <- rss / (n-p1)
+
+# Std. Error
+sebeta <- sqrt(diag(msresid*solve(xtx)))
+
+# t - value
+tratio <- beta / sebeta
+
+# p - value
+pvalue <- 2*(1 - pt(abs(tratio) , df = (n - p1)))
+
+# Output 
+out <- data.frame(Reg_Coeff = beta, SE_Beta = sebeta , T_value = tratio , P_value = pvalue)
+
+# Return the output that we find
+return(out)
+}
+
+# dump and source
+dump("slr" , file = "slr.txt")
+source("slr.txt")
+
+y <- trees$Volume
+x <- trees$Height
+
+# Fit the Model
+model_slr <- slr(x = x , y = y)
+
+round(model_slr , 3)
+
+```
+
+**Model:** $Volume = -87.12 + 1.5(Height)$
+
+To verify the above result , we fit the model by using `lm()` function.
+```{r}
+m = lm(y~x , data = trees) ; summary(m)
+```
+It's $\beta's$ ae same as above .
+<br>**Interpretation:** The value of $R^2 = 0.36$ , It's means only *36%* of variability are explain in this model .
+
+#### Extraction from the fitted SLR
+**Model:** $Volume = \beta_0 + \beta_1(Girth) + \epsilon$
+<br>Here we extract **names , names(summary()) , coefficients** , $R^2$ , **coef , residuals , sum of residuals , deviance , model mtx , MS_residuals , sigma**
+```{r , warning=FALSE}
+m1 <- lm(Volume ~ Girth , trees)
+# print m1
+print(m1)
+
+# Summary m1
+summary(m1)
+
+# Names of m1
+names(m1)
+
+# Names of summary of m1
+names(summary(m1))
+
+# Coef. of m1
+m1$coefficients
+
+# R_square
+summary(m1)$r.squared
+
+# beta's
+coef(m1)
+
+summary(m1)$coef
+
+# Residuals
+residuals(m1)
+
+# Residuals sum of Square
+sum(residuals(m1)^2)
+
+# Deviance od m1
+deviance(m1)
+
+# Model Matrix X
+X <- model.matrix(m1)
+X[c(1:3,25)]
+
+# MS_residuals
+d <- deviance(m1) / df.residual(m1) ; d
+
+# Sqrt of MS_residuals
+sqrt(d)
+
+# sigma
+summary(m1)$sigma  # Same as Above
+
+# Fitted Value =s of x*beta^T
+x_beta_hat <- fitted(m1)  ; head(x_beta_hat)
+
+# Predicted Values 
+pred1 <- predict(m1)  ; head(pred1)
+
+# Plot the graph b/w fitted(m1) & predict(m1)
+plot(x_beta_hat , pred1)
+
+# Variance - Covaiance of beta
+vcov(m1)
+```
+
+### Centered Form of SLR
+The form of the model
+$$y_i = \beta_0 + \beta_1(x_i - \bar{x}) + \epsilon_i \quad ; i = 1,2,\cdots , n$$
+is called centered form of simple linear regression model. Note that in this form $\hat{\beta_1}$ remains same, but $\hat{\beta_0 = \bar{y}}$ in this form. Moreover, $x_i$ is replaced by $(x_i − \bar{x})$ in the centered form. Thus to implement `slr()` function, define `x = x - mean(x)` , and call it into slr as argument x. Similar changes are also required in `lm()` to implement it. We shall make use of the `transform()` function for this data manipulation. Following set of commands will make the things more clear:
+```{r  , warning=FALSE}
+# Use the transform() to transform the variable
+d1 <- trees
+d1 <- transform(d1 , Girth.c = Girth - mean(Girth))
+head(d1)
+
+# Fit the centered form
+m1c <- lm(Volume ~ Girth.c , data = d1)
+
+summary(m1c)
+
+m11 <- lm(Volume ~ Girth , d1)
+
+# beta's of both models
+print(m1c)
+
+print(m11)
+
+# variance - covariance of beta's
+vcov(m1c)
+vcov(m11)
+
+# Correlation Mtx.
+cov2cor(vcov(m1c))
+cov2cor(vcov(m11))
+```
+
+**Note -:** Note that estimates are highly correlated in non-centered form, whereas they are not in centered form.
+<br>Moreover, $\hat{\beta_0}$ is simply $\bar{x}$, which is mean of the response vector $y$. For these reasons, centered form is preferred over non-centered form of the model. These ideas can be extended to multiple regression model also .
+
+### Centered Form of SLR by Own Function
+```{r , warning=F}
+slrc=function(y,x1) {
+X=cbind(1,x1) # model matrix
+n=nrow(X)
+p1=ncol(X)
+XtX=crossprod(X,X)
+Xty=crossprod(X,y)
+beta= solve(XtX,Xty)
+resid=y-X %*% beta
+rss= sum(resid^2)
+msresid=rss/(n-p1)
+sebeta=sqrt(diag(msresid*solve(XtX)))
+tratio=beta/sebeta
+pvalue=2*(1-pt(abs(tratio),df=n-p1))
+out=data.frame(Reg_Coeff=beta, SE_beta=sebeta, T_value=tratio, P_value=pvalue)
+out=round(out,3) # Round upto 3 digits
+return(out)
+}
+dump("slrc",file="slrc.txt")
+
+## Analyse the data 'trees' using 'volume' as response and
+# 'Girth' and 'Height' as regressors.
+d1=trees
+
+y=d1$Volume
+x1=d1$Girth-mean(d1$Girth)
+srmc=slrc(y,x1)
+print(srmc)
+```
+
+
+## Multiple Linear Regression / MLR
+**(Multiple Linear Regression Analysis)**
+<br>The basic difference between simple and multiple regression is that in simple there is only one predictor $x$, whereas in multiple regression it must be $2$ or $more$. We shall write a function to implement multiple regression analysis with $2$ regressors or covariates.
+
+1. **Model:** The Multiple Linear Regression Model is denoted as:
+$y_i=\beta_0+\beta_1x_1+\beta_2x_2 \cdots \beta_ix_{ip}+\epsilon$
+where, $y$ is the response vaiable , $\beta_1+\beta_2 + \cdots + \beta_i$ is regression coefficient and $x_1+x_2+ \cdots + x_{ip}$ are predictors.
+
+2. **Regressiom Coefficient:** Change in response y per unit change in regressor x.
+
+3. **Formulas for Calculation**
+<br>$(y,X,\beta,\sigma^2,I)$
+<br>It is to be noted that $y$ is the vector of responses, X is termed as model matrix and $\beta$ iis known as vector of regression coefficients.However, $\sigma^2$ is known as residual variance, $I$ stands for indentity matrix of order $n \times n$ .
+<br>The method of least square is used to estimate $\beta$ . This method states that we will close that value of $\beta$ which will minimize error sum of squares defined as : $errorSS=e^Te=(y-X\beta)^T(y-X\beta)$ and the result is solution normal equations defined as: $(X^TX)\hat{\beta}=X^Ty$ alternatively least square estimate of $\beta$ is defined as: $\hat{\beta}=(X^TX)^{-1}(X^Ty)$
+<br>This implies that variance covariance matrix of $\hat{\beta}$ is : $Var(\hat{\beta})=\sigma^2(X^TX)^{-1}$ and its estimate is $\widehat{Var(\hat{\beta})}=\hat{\sigma^2}(X^TX)^{-1}$
+<br>The diagonal elements of this matrix are variances and non-diagonal elements are co-variances, Thus standard error of $\beta$ is $SE(\hat{\beta})=\sqrt{diag(\widehat{Var(\hat{\beta})})}$ where $\hat{\sigma^2}=\frac{ResidSS}{n-(p+1)}=MSresidual$ where, $ResidSS=(y-X\hat{\beta})^T(y-X\hat{\beta})$
+
+4. **Sum of Squares -**
+<br>* **_Total Sum of Square:_** $SST=Y^TY-n\bar{Y}^2$ with degree of freedom $n-1$
+<br>* **_Regression Sum of Square:_** $SS_{res}= \hat{\beta}^TX^TY-n\bar{X}^2$ with degree of freedom k
+<br>* **_Residual Sum of Square:_** $SSR= Y^TY\hat{\beta}^TX^TY$ with degree of freedom n-k-1
+
+5. **Hypothesis of SLR:**
+<br>Null Hypothesis $H_0:\beta_1=\beta_2=\cdots= \beta_i = \cdots = \beta_{k}=0$
+<br>Alternative Hypothesis $H_1$: At least one $\beta_i's \neq 0 \quad ; i = 1,2,...,k$
+
+**Steps for Best Fitting of MLR :**
+
+1. **Relationship between the Response and Predictors**
+
+2. **Decide the Important Variables**
+
+3. **Fitting Model**
+
+4. **Predictions**
+
+### MLR with Advertising Data 
+
+* Here we fit the Multiple Linear Models of *Advertising* Data.
+<br>**Model :** $Sales = \beta_0 + \beta_1(TV) + \beta_2(Radio) + \beta_3(Newspaper) + \epsilon$
+
+```{r , warning =F}
+
+# Load advertising dataset
+library(readr)
+library(ggplot2)
+advertising <- read_csv("Advertising.csv")
+
+# we see the relation Graphically
+pairs(advertising , panel = panel.smooth)
+
+# We see correlation mtx
+cor(advertising)
+
+# Now we want to prove the above  results 
+ad_mlr <- lm(sales ~ TV + radio + newspaper , data = advertising)
+
+ad_mlr
+
+summary(ad_mlr)
+```
+
+* **Fitted Model:** $Sales = 2.94 + 0.046(TV) + 0.188(Radio) - 0.001(Newspaper)$
+* The value of $R^2$ is 0.9 , which tells that **90%** of variability explain in our model . **OR**
+<br>Our Model **90%** Good .
+
+### MLR with Marketing Data 
+
+* Here we fit the Multiple Linear Models of *Marketing* Data .
+<br>**Model :** $Sales = \beta_0 + \beta_1(TV) + \beta_2(Radio) + \beta_3(Newspaper) + \epsilon$
+```{r , warning =F}
+
+# Load advertising dataset
+library(datarium)
+data("marketing")
+# we see the relation Graphically
+pairs(marketing , panel = panel.smooth)
+
+# We see correlation mtx
+cor(marketing)
+
+# Now we want to prove the above  results 
+mar_mlr <- lm(sales ~ youtube + facebook + newspaper , data = marketing)
+
+mar_mlr
+
+summary(mar_mlr)
+```
+
+* **Fitted Model:** $Sales = 3.52 + 0.045(YouTube) + 0.188(Facebook) - 0.001(Newspaper)$
+* The value of $R^2$ is 0.89 , which tells that **89%** of variability explain in our model . **OR**
+<br>Our Model **89%** Good .
+
+### MLR with Trees Data Data 
+*Model:** $Volume = \beta_0 + \beta_1(Girth)+ \beta_2(Height) \epsilon$
+
+1. **Correlation Matrix of Trees Data**
+```{r}
+cor(trees)
+```
+
+<br>We can also see this **Graphically**
+
+```{r}
+pairs(trees , panel = panel.smooth)
+```
+
+To prove that we fit the linear model .
+
+```{r}
+lmr_girth <- lm(Volume ~ Girth + Height , data = trees) 
+summary(lmr_girth)
+```
+* **Complete Interpretation :**
+
+* **Fitted Model :** $Volume = -57.99 + 4.70(Girth) + 0.33(Heigt)$
+<br> It means for a change of one unit in *Girth* will bring **4.70** units to change in *Volume* and one unit change in *Height* will bring **0.33** units to change in *Volume*. **OR**
+<br>If the *Girth* increase by one unit then the *Volume* will increase by **4.70** units *&* If the *Height* increase by one unit then the *Volume* will increase by **0.33** units. 
+
+* The **Std.Error** is variability to expect in coefficient which captures sampling variability so the variation in *intercept* can be up $8.64$ and variation in *Girth* will be $0.26$ and and variation in *Height* will be $0.13$ not more than that .
+
+* **T value :** t-value is coefficient divided by standard error it is basically how big is estimated relative to error bigger the coefficient relative to *Std.Error* the bigger that t score and t score comes with a p-value because its a distribution p-value is how significantly significant the variable is to the model for a *Confidence Interval* of $95%$ we will compare this value with $\alpha$ which will be $0.05$ , so in our case *p-value* of both *intercept* , *Girth* is less than $\alpha$ ($\alpha = 0.05$) this implies that both are statistically significant to iur model **&** *Height* is greater than $\alpha$ ($\alpha = 0.05$) this implies that *height* is not statistically significant to our model.
+
+* **Residual Standard Error** or the std. error of the model is basically the average error for the model which is $3.88$ in our case and it means that our model can be off by on an average of **3.88** , while predicting the Volume lesser the error the better the model while predicting . 
+
+* **Model Accuracy :** The value of $R^2 = 0.94$ , it's mean that our model is *94%* good . **OR**
+<br>There is **94%** variability is explain in our Model. 
+* **F - statistics** is the ratio of the mean sum square of the model and mean sum square of the error. In othe word it's the ratio of how well the model is doing and what the errror is doing and the higher the F-value is the better the model is doing on compared to error .
+<br>*2* is the df of numerator and *23* is the df of the F-statistics .
+<br>The value of *F-statistic* is **255* and the corresponding *p-value* is $2.2e^{-16}$ .
+
+### MLR by Own Function 
+Here we will fit the *MLR Model* by defing our own fumction.
+<br>**Model:** $Volume = \beta_0 + \beta_1(Girth) + \beta_2(Height) + \epsilon$
+```{r , warning=FALSE}
+mlr <- function(y , x1 , x2){
+# define a function to implement multiple linear regression
+# y is the response variable
+# x1 is one regressor
+# x2 is another regressor
+# this function returns regresion analysis
+X<-cbind(1,x1,x2)
+p1<-ncol(X)
+n<-nrow(X)
+
+# (x^t x)
+xtx<-crossprod(X)
+
+# (X^T y)
+xty<-crossprod(X,y)
+
+# beta= (X^T y)^-1 (X^T y)
+beta<-solve(xtx,xty)
+
+# Resid = y-X*beta
+resid<-y-X %*% beta
+
+# Residual Sum Square
+rss<-sum(resid^2)
+
+# Mean Sum Square
+msresid<-rss/(n-p1)
+
+# Std. Error
+sebeta<-sqrt(diag(msresid*solve(xtx)))
+
+# T- Value
+tratio<-beta/sebeta
+
+# P - value
+pvalue<-2*(1-pt(abs(tratio),df=n-p1))
+
+# Output
+out<-data.frame(Reg_Coef = beta , SE_beta = sebeta , tvalue = tratio , P_value = pvalue)
+
+#round output up to 3 digits
+out<-round(out,3) 
+return(out)  
+}
+
+dump("mlr",file="mlr.txt")
+
+## Analyse the data `trees` using `Volume` as response and #`Girth` and `Height` as regressors.
+data(trees)
+y<-trees$Volume
+x1<-trees$Girth
+x2<-trees$Height
+
+M2<-mlr(y,x1,x2)
+print(M2)
+```
+
+* **Fitted Model :** $Volume = -57.99 + 4.70(Girth) + 0.33(Heigt)$
+
+Compare the above results by `lm()` function.
+```{r}
+mlr_tree <- lm(Volume ~ Girth + Height , trees)
+mlr_tree
+```
+
+The result we get by **slr()** and **lm()** functions are approximately same
+
+#### Extraction from the fitted MSLR
+```{r}
+m2 <- lm(Volume ~ Girth + Height , trees)
+print(m2)
+
+summary(m2)
+
+# Names of m2
+names(m2)
+
+# Names of summary of m2
+names(summary(m2))
+
+# Coef. of m2
+m2$coefficients
+
+# R_square
+summary(m2)$r.squared
+
+# beta's
+coef(m2)
+
+summary(m2)$coef
+
+# Residuals
+residuals(m2)
+
+# Residuals sum of Square
+sum(residuals(m2)^2)
+
+# Deviance of m2
+deviance(m2)
+
+# Model Matrix X
+X <- model.matrix(m2)
+X[c(1:3,25)]
+
+# MS_residuals
+d1 <- deviance(m2) / df.residual(m2) ; d1
+
+# Sqrt of MS_residuals
+sqrt(d1)
+
+# sigma
+summary(m2)$sigma  # Same as Above
+
+# Fitted Value =s of x*beta^T
+x_beta_hat1 <- fitted(m2)  ; head(x_beta_hat1)
+
+# Predicted Values 
+pred11 <- predict(m2)  ; head(pred11)
+
+# Plot the graph b/w fitted(m1) & predict(m1)
+plot(x_beta_hat1 , pred11)
+
+# Variance - Covaiance of beta
+vcov(m2)
+```
+
+### Centered Form of MLR
+General Form of Centered Model of MLR
+$$y_i = \beta_0 + \beta_1(x_{i1} - \bar{x_1}) + \beta_2(x_{i2} - \bar{x_2}) + \cdots +\beta_j(x_{ij} - \bar{x_j}) + \epsilon_{ij} \quad ; i \neq j = 1,2,\cdots , n$$
+
+**Our Fitted Model** for *trees* data .
+<br>$Volume = \beta_0 + \beta_1(Girth - mean(Girth)) + \beta_2(Height - nean(Height)) + error$
+
+```{r}
+d1 <- trees # Assign trees to d1
+d1 <- transform(d1, Girth.c = Girth - mean(Girth) , Height.c = Height - mean(Height))
+head(d1)
+
+# Fit the centered form
+mlr_c=lm(Volume ~ Girth.c + Height.c , data=d1)
+
+# Summary of mlr_c
+summary(mlr_c)
+
+# Comparision of Centered and Non - centered Model
+m22 <- lm(Volume ~ Girth + Height , trees)
+# Coefficients
+print(mlr_c)
+print(m22)
+
+# Variance - Covariance of beta's
+vcov(mlr_c)
+vcov(m22)
+
+# Correlation Matrix
+cov2cor(vcov(mlr_c))
+cov2cor(vcov(m22))
+```
+
+### Centered Form of MLR by Own Function
+```{r , warning=FALSE}
+mlrc=function(y,x1,x2) {
+X=cbind(1,x1,x2) # model matrix
+
+n=nrow(X)
+
+p1=ncol(X)
+
+XtX=crossprod(X,X)
+
+Xty=crossprod(X,y)
+
+beta= solve(XtX,Xty)
+
+resid=y-X %*% beta
+
+rss= sum(resid^2)
+
+msresid=rss/(n-p1)
+
+sebeta=sqrt(diag(msresid*solve(XtX)))
+
+tratio=beta/sebeta
+
+pvalue=2*(1-pt(abs(tratio),df=n-p1))
+
+out=data.frame(Reg_Coeff = beta , SE_beta = sebeta , T_value = tratio , P_value = pvalue)
+
+out=round(out,3) # Round upto 3 digits
+
+return(out)
+}
+
+dump("mlrc",file="mlrc.txt")
+
+## Analyse the data 'trees' using 'volume' as response and
+# 'Girth' and 'Height' as regressors.
+d2=trees
+
+y=d2$Volume
+x1=trees$Girth-mean(d2$Girth)
+x2=trees$Height-mean(d2$Height)
+M4c=mlrc(y,x1,x2)
+
+print(M4c)
+```
+
+
+### Interactive MLR
+
+**Model :** $Sales = \beta_0 + \beta_1(TV) + \beta_2(Radio) + \beta_3(TV \times Radio) + \epsilon$
+
+```{r , warning=FALSE}
+library(readr)
+
+advertising <- read_csv("Advertising.csv")
+
+int_model <- lm(sales ~ TV + radio + TV:radio , data = advertising)
+
+# int_model <- lm(sales ~ TV + radio + TV * radio , data = advertising)
+
+summary(int_model)
+```
+
+Fitted Model :** $\hat{Sales}= 6.19 + 0.0423(TV) + 0.0422(Radio) + 0.0004(TV \times Radio)$
+
+## Non - Linear Relationship
+we assume that there is a *Linear Regression* between Response and Predictors , but in many case there is a *Non-Linear Relationship*.
+<br> We present a very simple way to directly extend the linear model to accommodate non-linear relationships, using **Polynomial Regression**. 
+
+We can see in *Auto* dataset from *ISLR* package .
+
+```{r}
+library(ISLR)
+data("Auto")
+head(Auto)
+
+# WE can see by using Scatterplot
+ggplot(Auto , aes(horsepower , mpg)) + 
+  geom_point() + geom_smooth(se = F , col= "red") +
+  geom_smooth(method = "lm", se = F) +
+  labs(x = "Horsepower" , y = "Miles per gallon")
+```
+
+Here `Red` line is the *best fitted line* while `Steelblue` line is *linear* which is not a 'best fitted line' . so , here we can not directly apply Linear Regression . Firstly we convert it into LR .
+
+**Model :** $mpg = \beta_0 + \beta_1(horsepower) + \beta_2(horsepoer)^2 + \epsilon$
+
+```{r}
+h_lm <- lm(mpg ~ horsepower + I(horsepower^2)  , data = Auto)
+summary(h_lm)
+```
+
+**Fitted Model :** $\widehat{mpg} = 56.9 -0.466(horsepower) + 0.001(horsepower)^2$
+<br> The value of $R^2 = 0.68$ , that means our Model is **68%** Good.
+
+#### Potential problems
+When we fit a *Linear regression Model* to a particular dataset.
+<br> There are many problems which we are face during fitting a Model . Some of them are as follows :
+<br> 1. *Non-Linearity of the Response - Predictor Relationship*
+<br> 2. *Correlation of Error Terms*
+<br> 3. *Non-Constant variance of error terms*
+<br> 4. *Outliers*
+<br> 5. *Higher-Leverage Points*
+<br> 6. *Collinearity* 
+
+## Comparison of Linear Regression with K-Nearest Neighbors
+
+### K-Nearest Neighbors (KNN) Regression
+One of the simplest and best-known non-parametric methods, K-nearest neighbors regression (KNN regression).
+
+The *MSE* for *KNN* as a function of *1/K* (on the log scale). Linear regression achieves a lower test MSE than does KNN regression, since f(X) is in fact linear. For KNN regression, the best results occur with a very large value of K, corresponding to a small value of 1/K
+<br> $KNN \propto \frac{1}{k}$
+
+## Labs 
+
+Load Some packages for differeent datasets .
+```{r , warning=FALSE}
+library(MASS)
+library(ISLR)
+library(ISLR2)
+```
+
+### Simple Linear Regression (SLR)
+Here we fit a Model of Simple Linear Regression Model of *Boston* dataset from *MASS* package , which records *medv (median house value)* for 506 census tracts in Boston. We will seek to predict medv using 12 predictors such as *rm* (average number of rooms per house), *age* (average age of houses), and *lstat* (percent of households with low socioeconomic status) .
+
+**Model :** $medv = \beta_0 + \beta_1(lstat) + \epsilon$
+
+```{r}
+data("Boston")
+
+# Names of columns od data
+names(Boston)
+
+# Head of Dataset
+head(Boston)
+
+# Fit the Model 
+boston_model <- lm(medv ~ lstat , data = Boston)
+summary(boston_model)
+
+# OR we can also fitt as
+# attach (Boston)
+# model <- lm(medv ∼ lstat) ; summary(model)
+```
+
+**Fitted Model :** $\widehat{medv} = 34.55 - 0.95(lstat)$
+<br> The value of $R^2 = 0.54$ , that means **54%** of variability is explained in Our Model .
+
+**Task :** Find out the other information stored in above fitted model . 
+```{r}
+#  Formula of Model
+boston_model$call
+
+# Names
+names(boston_model)
+
+# Coefficents 
+boston_model$coefficients
+
+# Residuals
+res <- boston_model$residuals
+head(res)
+
+# Effect
+effect <- boston_model$effects
+head(effect)
+
+# Rank
+boston_model$rank
+
+# Fitted Values y_cap
+fitted_value <- boston_model$fitted.values
+head(fitted_value)
+
+# Assign
+boston_model$assign
+
+# Qr
+qr <- boston_model$qr
+head(qr)
+
+# Residuals
+boston_model$df.residual
+
+# Terms
+boston_model$terms
+
+# Values of Dependent and Independent Columns
+val <- boston_model$model
+head(val)
+
+# Confidence Interval
+confint(boston_model)
+
+# confidence intervals 
+predict(boston_model , data.frame(lstat = (c(5, 10, 15))),
+interval = "confidence")
+
+# R-Square Value
+summary(boston_model)$r.sq
+
+# RSE
+summary(boston_model)$sigma
+```
+
+The *95 % Confidence Interval* associated with a *lstat* value of *10* is **(24.47 , 25.63)**
+
+```{r}
+# predict() prediction intervals
+predict(boston_model , data.frame(lstat = (c(5, 10, 15))),
+interval = "prediction")
+```
+
+The *95 % Prediction Interval* associated with a *lstat* value of *10* is **(12.828 , 37.28)**
+
+**Task :** Plot *medv* and *lstat* along with the least squares regression line .
+```{r}
+plot(lstat , medv)  # Scatter Plot
+abline (boston_model , col = "red")
+```
+
+There is some evidence for non-linearity in the relationship between *lstat* and *medv* .
+
+```{r}
+plot(lstat , medv)  
+abline (lm.fit , lwd = 3)
+abline (lm.fit , lwd = 3, col = " red ")
+plot (lstat , medv , col = " red ")
+plot (lstat , medv , pch = 20)
+plot (lstat , medv , pch = "+")
+plot (1:20, 1:20, pch = 1:20)
+```
+
+**Task :** Plot the Graphs b/w *Predicted* and *Residuals* values. 
+```{r}
+par(mfrow = c(2 , 2))
+plot(boston_model)
+```
+
+*Alternatively, we can compute the residuals from a linear regression fit*
+
+```{r}
+x <- boston_model
+plot(predict(x) , residuals(x)) # plot(x$predict , x$residuals)
+plot(predict(x) , rstudent(x))
+```
+
+On the basis of the residual plots, there is some evidence of non-linearity.
+<br> Leverage statistics can be computed for any number of predictors using the *hatvalues()* function
+
+```{r}
+plot(hatvalues(x))
+
+# Maximum hat value
+which.max(hatvalues(x))
+```
+**375** is the  the largest *leverage statistic*.
+
+
+### Multiple Linear Regression (MLR)
+We will again fitt the Model of same data *(Boston)*
+
+**Model :** $medv = \beta_0 + \beta_1(lstat) + \beta_2(age) + \epsilon$
+
+```{r}
+m <- lm(medv ~ lstat + age , data = Boston)
+summary(m)
+```
+
+**Fitted Model :** $\widehat{medv} = 33.22 - 1.03(lstat) + 0.034(age)$
+<br> The value of $R^2$ is $0.55$ , which means that our Model is **55%** is Good .
+
+**TASK :** Fit the Model for all the variables of *Boston* data.
+
+**Model :** $medv = \beta_0 + \beta_1(crime) + \beta_2(zn)+ \beta_3(indus) + \beta_4(chas) + \beta_5(nox) +  \beta_6(rm) + \beta_7(age) + \beta_8(dis)  + \beta_9(rad) + \beta_{10}(tax) + \beta_{11}(ptratio) + \beta_{12}(lstat)$
+
+```{r}
+mm <- lm(medv ~ . , Boston)
+summary(mm)
+```
+
+**Fitted Model :** $medv = 41.61 - 0.12(crime) + 0.046(zn)+ 0.013(indus) + 2.84(chas) - 18.76(nox) +  3.66(rm) + 0.003(age) - 1.49(dis)  + 0.29(rad) - 0.012(tax) - 0.94(ptratio) - 0.55(lstat)$
+
+The value of $R^2$ is $0.73$,that means **73%** variability is explain in Our Model .
+
+**Task :** Find the $R^2 \, , \, RSE \, ,\, VIF$ Values. 
+```{r}
+# R-Square
+summary(mm)$r.sq
+
+# RSE
+summary(mm)$sigma
+```
+
+To find the **VIF** , firstly we load **car** *library* .
+```{r , warning=FALSE}
+library(car)
+vif(mm)
+```
+
+In the above model *mm* **age** variable is not significant . So we want to remove only this variable then
+```{r}
+mm1 <- lm(medv ~ . -age , data = Boston)  ; mm1
+
+# We can also update the the above model (mm)
+mm2 <- update(mm , ~ . -age)   ; mm2
+```
+
+The results of *mm1* and *mm2* are same .
+
+### Intractive MOdel
+We will again use same Data **Boston**
+
+**Model :** $medv = \beta_0 + \beta_1(lstat\times age) + \epsilon$
+
+```{r}
+im <- lm(medv ~ lstat*age , data = Boston)
+summary(im)
+```
+
+**Fitted Model :** $\widehat{medv} = 36.08 - 1.39(lstat) - 0.0007(age) + 0.004(lstat : age)$
+<br> The value of $R^2$ is $0.55$ , that means only **55%** of variability is explain in our model.
+
+### Non - Linear Tansformations of the Predictos
+We can also use **lm()** function for *non-linear models* as well by using their *transformation* .
+
+**Model :** $medv = \beta_0 + \beta_1(lstat) + \beta_2(lstat)^2 + \epsilon$
+
+```{r}
+tm <- lm(medv ~ lstat + I(lstat^2) , data = Boston)
+summary(tm)
+```
+
+**Fitted Model :** $\widehat{medv} = 42.86 - 2.33(lstat) + 0.043(lstat)^2$
+<br> The value of $R^2$ is $0.64$ , that means only **64%** of variability is explain in our model.
+
+**Task :** Plotting
+```{r}
+par(mfrow = c(2 , 2))
+plot(tm)
+```
+
+**Ploy Fitted Model :**
+
+In order to create a cubic fit, we can include a predictor of the form $I(X^3)$. However, this approach can start to get cumbersome for higher-order polynomials.
+<br> A better approach involves using the **poly()** function poly() to create the **polynomial** within **lm()** .
+<br> For example, the following command
+produces a fifth-order polynomial fit:
+<br> **Model :** $medv = \beta_0 + \beta_1(lstat) + \beta_2(lstat)^2 + \beta_3(lstat)^3 +\beta_4(lstat)^4 + \beta_5(lstat)^5 + \epsilon$
+
+```{r}
+pm <- lm(medv ~ poly(lstat , 5))
+summary(pm)
+```
+
+This suggests that including additional polynomial terms, up to fifth order, leads to an improvement in the model fit! .
+
+**Log Fitted Model :**
+<br> A linear model applied to the output of the *poly()* function will have the same fitted values as a linear model applied to the raw polynomials (although the coefficient estimates, standard errors, and p-values will differ). In order to obtain the raw polynomials from the poly() function, the argument *raw = TRUE* must be used .
+
+**Model :** $medv = \beta_0 + \beta_1\times log(rm) + \epsilon$
+
+```{r}
+summary(lm(medv ~ log(rm) , data = Boston))
+```
+
+**Fitted Model :** $medv = -76.48 + 54.05\times log(rm)$
+
+### Qualitative Predictors
+Here we will work on **Carseats** data from *ISLR2* package .
+```{r}
+data("Carseats")
+names(Carseats)
+head(Carseats)
+```
+
+**Model :** $Sales = \beta_0 + \beta_1(Income : Advertising) + \beta_2(Price : Age) + \epsilon$
+
+```{r}
+cm <- lm(Sales ~ . + Income : Advertising + Price : Age , data = Carseats)
+summary(cm)
+```
+
+The **contrasts()** function returns the coding that R uses for the dummy contrasts() variables . For further detail use *??contrasts()*.
+```{r}
+attach (Carseats)  # To Loading Data
+contrasts (ShelveLoc)
+```
+
+R has created a *ShelveLocGood* dummy variable that takes on a value of *1* if the shelving location is good, and 0 otherwise.
+
+
+# Economertrics
+
+1. **Econometrics :** Econometrics has developed methods for dealing with the random component of economic relation .
+<br> **Econometrics** is an amalgam of *economic theory , mathematical economics  , economics statistics* and *mathematical statistics* .
+
+2. **Aims of econometrics :**
+<br> i. Formulation and specification of econometric models .
+<br> ii. Estimation and testing of models
+<br> iii. Use of Models
+
+3. **Types of Data :**
+
+i. **Time Series Data :** Time series data give information about the numerical values of variables from period to period and are  collected over time. 
+<br> For example, the data during the years 1990-2010 for monthly income constitutes a time series of data. 
+
+ii. **Cross - Sectional Data :** The cross-section data give information on the variables concerning individual agents (e.g., consumers or produces) at a given point of time. 
+<br> For example, a cross-section of a sample of consumers is a sample of  family budgets showing expenditures on various commodities by each family, as well as information on family income, family composition and other demographic, social or financial characteristics. 
+
+iii. **Panel Data :** The panel data are the data from a repeated survey of a single (cross-section) sample in different periods of  time. 
+
+
+## Multicollinearity
+**Multicollinearity :** The situation where the explanatory variables are intercorrelated is reffered to as Multicollinearity .
+<br> When some or all of the explanatory variables are highly but not perfect collinear .
+
+### Sources of Multicollinearity
+
+1. **Method of Data Collection** 
+<br> 2. **Model and Population Constraints**
+<br> 3. **Existence of Identities** OR **Definitional Relationships**
+<br> 4. **Imprecise Formulation of Model**
+<br> 5. **An Over - Determined Model**
+
+### Consequences of Multicollinearity
+1. The Precision of estimation falls . The loss of precision has three aspects :-
+<br> i. Specific estimates may have very large errors .
+<br> ii. These errors may be highly correlated one with another .
+<br> iii. The sampling variance of the coefficients will be very large.
+<br> 2. Investigators are sometimes led to drop variables incorrectly from an analysis because their coefficients are not significantly different from zero .
+
+### Multicollinearity Diagnostics
+1. **Determinant of** $X'X \,\,(|X'X|)$ 
+<br> 2. **Inspection of Correlation Matrix** 
+<br> 3. **Determinant of Correlation Matrix :** Thus a value close to 0 is an indication of a high degree of multicollinearity. Any value of D between 0  and 1 gives an idea of the degree of multicollinearity .
+<br> 4. **Measure Based on Partial Regression**
+<br> 5. **Variance Inflation Factor (VIF)** : $VIF_i = \frac{1}{1-R^2_i}$
+
+In practice, usually, a **VIF > 5*** or **10** indicates that the associated regression coefficients are poorly  estimated because of multicollinearity. If regression coefficients are estimated by OLSE and its variance  is $\sigma^2(X'X)$ So VIF indicates that a part of this variance is given by $VIF_i$ . 
+<br> **Limitations :** 
+<br> (i) It sheds no light on the number of dependencies among the explanatory variables. 
+<br> (ii) The rule of **VIF > 5** or **10** is a rule of thumb which may differ from one situation to another situation. 
+
+### Remedies for Multicollinearity
+1. **Obtain More Data**
+<br> 2. **Drop some Variables that are Collinear**
+<br> 3. **Use some Relevant Prior Information**
+<br> 4. **Employ Generalized Inverse** 
+<br> 5. **Use of Principal component Regression** 
+<br> 6. **Ridge Regression**
+
+
+## Auto-Correlation
+**Auto - Correlation :** In Regression Model $Y =X\beta + \epsilon$ , the assumption $E(\epsilon\epsilon') = \sigma^2I$ , [i.e. The distribution term $\epsilon$ has constant variance $\sigma^2$ and $E(\epsilon_i,\epsilon_j) = 0$ ] is violated . Here we also consider that $E(\epsilon) = 0$ and $E(\epsilon\epsilon') = \sigma^2 \Omega$   
+
+### Tests for Autocorrelation :**
+1. **Durbin Watson test**
+
+### Consequences of Auto-Correaltion
+1. $\beta$ is unbiased but the Sampling variance is large 
+<br> 2. We will obtain *Inefficient Prediction* i.e. Prediction with needlessly large sampling variance.
+
+### Source of Auto-Correlation
+1. Carry over effect atleast in part is an important source of autocorrelation.
+<br> 2. Deleting of some variance .
+<br> 3. The misspecification of the form of relationship can introduced in the data .
+
+## Hetroscedasticity
+
+**Hetroscedasticity :** In Regression Model $Y =X\beta + \epsilon$ , the assumption $V(\epsilon) = \sigma^2I$ , violated .
+
+### Tests for Heteroscedasticity 
+1. **Bartlett test** 
+<br> 2. **Breusch Pagan test** 
+<br> 3. **Goldfeld Quandt test** 
+<br> 4. **Glesjer test** 
+<br> 5. **Test based on Spearman’s rank correlation coefficient** 
+<br> 6. **White test** 
+<br> 7. **Ramsey test** 
+<br> 8. **Harvey Phillips test**
+<br> 9. **Szroeter test** 
+<br> 10. **Peak test (non-parametric) test** 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

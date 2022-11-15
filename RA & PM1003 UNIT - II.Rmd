@@ -1,0 +1,915 @@
+---
+title: "DSM-1003 Regression Analysis and Predictive Modeling -II"
+author: "Mohammad Wasiq"
+date: "01/03/2022"
+output: html_document
+---
+
+Book :-: **An Introduction to Statistical Learning with Applications in R** by **Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani**
+<br> Teacher :-: **Prof. Ahmedur Rehman Sir**
+<br> Composer :-: **Mohammad Wasiq** *(Data Science)*
+
+# Classification
+One of the assumptions of linear regression is that the relationship between variables is linear and when the outcome variable is categorical, this assumption is violated. One way around this problem is to transform the data using the logarithmic transformation .
+
+**Binary Logistic Regression :** When we are trying 
+to predict membership of only two categorical outcomes the analysis is known as binary logistic regression . 
+
+## Logistic Regression
+**Logistic Regression :** Logistic regression is multiple regression but with an outcome variable that is a categorical variable and predictor variables that are continuous or categorical.
+
+**Logistic Regression Model :**
+$$p(X) = \frac{e^{\beta_0 + \beta_1X}}{1+e^{\beta_0 + \beta_1X}}$$
+
+**Interpretation :** The interpretation of logistic regression is the value of the **odds ratio**, which is the exponential of $\beta$ (i.e., $e^{\beta}$ or $exp(\beta)$) and is an indicator of the change in odds resulting from a unit change in the predictor .
+
+**Task :** Now we are fitting the *Logistic Regression* for *Default* data .
+
+**Model :** $p(default) = \frac{e^{\beta_0 + \beta_1(balance)}} {1+e^{\beta_0 + \beta_1(balance)}}$
+
+```{r , message=FALSE , warning =FALSE}
+library(ISLR2)
+data("Default")
+head(Default)
+
+# Fitting the Logistic Model :
+
+log_m <- glm(default ~ balance , data = Default , family = binomial) 
+log_m
+
+# Summary of Model
+summary(log_m)
+```
+
+**Fitted Model :** $\hat{p}(default) = \frac{e^{-10.65 + 0.0055(balance)}} {1 + e^{-10.65 + 0.0055(balance)}}$
+
+**Interpretation :** A one-unit increase in **balance** is associated with an increase in the log odds of **default** by **0.0055** units.                                  **OR**
+<br> $\hat{p}(default) = \frac{e^{-10.65 + 0.0055 \times 1000}} {1 + e^{-10.65 + 0.0055 \times 1000}} = 0.00576$
+<br> 1000 unit increase in **balance** is associated with an increase in the log odds of **default** by **5** units with probability **0.00576** .
+
+**Model :** $p(default) = \frac{e^{\beta_0 + \beta_1(student)}} {1+e^{\beta_0 + \beta_1(student)}}$
+
+```{r , message=FALSE , warning =FALSE}
+# Fitting the Logistic Model :
+
+log_s <- glm(default ~ student , data = Default , family = binomial) 
+# Summary of Model
+summary(log_s)
+```
+
+**Model :** $p(default) = \frac{e^{-3.50 + 0.4049(student)}} {1 + e^{-3.50 + 0.4049(student)}}$
+
+**Interpretation :** A one-unit increase in **student** is associated with an increase in the log odds of **default** by **0.4049** units.
+
+$\hat{Pr}(default = Yes | student = Yes) = \frac{e^{-3.50 + 0.4049 \times 1}} {1 + e^{-3.50 + 0.4049 \times 1}} = 0.0431$
+
+$\hat{Pr}(default = Yes | student = Yes) = \frac{e^{-3.50 + 0.4049 \times 0}} {1 + e^{-3.50 + 0.4049 \times 0}} = 0.0292$
+
+## Multiple Logistic Regression
+$$p(X) = \frac{e^{\beta_0 + \beta_1X_1 +...+ \beta_pX_p}}{1 + e^{\beta_0 + \beta_1X_1 +...+ \beta_pX_p}}$$
+
+**Model :** $p(default) = \frac{e^{\beta_0 + \beta_1(balance) + \beta_2(income) + \beta_3(student)}} {1 + e^{\beta_0 + \beta_1(balance) + \beta_2(income) + \beta_3(student)}}$
+
+```{r , message=FALSE , warning =FALSE}
+# Fitting the Logistic Model :
+
+log_bis <- glm(default ~ balance + income + student , data = Default , family = binomial) 
+# Summary of Model
+summary(log_bis)
+```
+
+**Fitted Model :** $p(default) = \frac{e^{-10.869 + 0.0057(balance) + 0.0030(income) - 0.6468(student)}} {1 + e^{-10.869 + 0.0057(balance) + 0.0030(income) - 0.6468(student)}}$
+
+The negative coefficient for *student* in the multiple logistic regression indicates that for a fixed value of *balance* and *income* , a student is less likely to default than a non-student.
+
+A  student with a credit card balance of *$1500* and an income of *$40000* has an estimated probability of default of
+<br> $\hat{p}(X) = \frac{e^{-10.869 + 0.0057 \times 1500 + 0.0030 \times 40 - 0.6468 \times 1}} {1 + e^{-10.869 +  0.0057 \times 1500 + 0.0030 \times 40 - 0.6468 \times 1}} = 0.058$
+
+A non-student with the same balance and income has an estimated probability of default of
+<br> $\hat{p}(X) = \frac{e^{-10.869 + 0.0057 \times 1500 + 0.0030 \times 40 - 0.6468 \times 0}} {1 + e^{-10.869 +  0.0057 \times 1500 + 0.0030 \times 40 - 0.6468 \times 0}} = 0.105$
+
+we multiply the income coefficient estimate by *40*, rather than by 40,000, because in that table the model was fit with income  measured in units of *$1, 000*)
+
+## Multinomial Logistic Regression
+**Multinomial / Polychotomous Logistic Regression :** When we want to predict membership of more than two categories we use Multinomial (or Polychotomous) Logistic Regression. 
+<br> It turns out that it is possible to extend the two-class logistic regression approach to the setting of *K > 2* classes.
+
+$$Pr(Y=K | X=x) = \frac{e^{\beta_{k_0}+\beta_{k_1x_1}+...+\beta_{k_px_p}}}{ 1 + \sum_{i = 1}^{k-1} e^{\beta_{k_0}+ \beta_{k_1x_1} +...+ \beta_{k_px_p}}}$$
+
+for *k = 1 , ... , k-1* and
+<br> $Pr(Y=K | X=x) = \frac{1}{ 1 + \sum_{i = 1}^{k-1} e^{\beta_{k_0}+ \beta_{k_1x_1} +...+ \beta_{k_px_p}}}$
+
+It is not hard to show that for *k = 1,...,K−1* ,
+$$log\lgroup \frac{Pr(Y = k |X = x)}{Pr(Y = K |X = x)}\rgroup= \beta_{k0} + \beta_{k1}x_1 + \cdots + \beta_{kp}x_p$$
+The decision to treat the *Kth* class as the baseline is unimportant .
+<br> The coefficient estimates will differ between the two fitted models due to the differing choice of baseline, but the fitted values (predictions), the log odds between any pair of classes, and the other key model outputs will remain the same.
+
+We now briefly present an alternative coding for multinomial logistic regression, known as the **softmax coding**. The softmax coding is equivalent softmax to the coding just described in the sense that the fitted values, log odds between any pair of classes, and other key model outputs will remain the same, regardless of coding.
+<br>  In the softmax coding, rather than selecting a baseline class, we treat all K classes symmetrically, and assume that for *k = 1,...,K* .
+$$Pr(Y=k | X=x) = \frac{e^{\beta_{k0}+\beta_{k_1x_1}+...+\beta_{k_px_p}}}{ \sum_{i = 1}^{K} e^{\beta_{l_0}+ \beta_{l_1x_1} +...+ \beta_{l_px_p}}}$$
+Thus, rather than estimating coefficients for *K−1* classes, we actually estimate coefficients for all *K* classes. 
+<br> The log odds ratio between the *kth* and *k′th* classes equals .
+It is not hard to show that for *k = 1,...,K−1* ,
+$$log\lgroup \frac{Pr(Y = k |X = x)}{Pr(Y = k' |X = x)}\rgroup= (\beta_{k0}-\beta_{k'0}) + (\beta_{k1}-\beta_{k'1})x_1 + \cdots + (\beta_{kp}-\beta_{k'p})x_p$$
+
+## Generative Models for Classification
+Logistic regression involves directly modeling *Pr(Y = k|X = x)* using the logistic function .
+
+*Why do we need another method, when we have logistic regression ?*
+<br> There are several reasons:
+- When there is substantial separation between the two classes, the parameter estimates for the logistic regression model are surprisingly unstable. The methods that we consider in this section do not suffer from this problem.
+- If the distribution of the predictors X is approximately normal in each of the classes and the sample size is small, then the approaches in this section may be more accurate than logistic regression.
+- The methods in this section can be naturally extended to the case of more than two response classes. (In the case of more than two response classes, we can also use multinomial logistic regression )
+
+Suppose that we wish to classify an observation into one of K classes, where *K ≥ 2*. In other words, the qualitative response variable *Y* can take on *K* possible distinct and unordered values . Let $\pi_k$ represent the *overall* or *prior probability* that a randomly chosen observation comes from the prior *kth* class. Let $f_k(X) ≡ Pr(X|Y = k)$ denote the density function of X for an observation that comes from the *kth* class. In other words, $f_k(x)$ is relatively large if there is a high probability that an observation in the kth
+class has $X ≈ x$, and $f_k(x)$ is small if it is very unlikely that an observation in the *kth* class has $X ≈ x$. <br> Then *Bayes’ theorem* states that : 
+$$Pr(Y = k | X = x) = \frac{\pi_k f_k(x)}{\sum_{l=1}^k \pi_l f_l(x)}$$
+we will use the abbreviation  $p_k(x) = Pr(Y = k|X = x)$; this is the posterior probability that an observation posterior $X = x$ belongs to the *kth* class. That is, it is the probability that the observation belongs to the *kth* class, given the predictor value for that observation.
+
+we discuss three classifiers that use different estimates of $f_k(x)$ to approximate the Bayes classifier : 
+- **Linear Discriminant Analysis (LDA)** 
+- **Quadratic Discriminant Analysis (QDA)** 
+- **Naive Bayes (NB)**
+
+### Linear Discriminant Analysis (LDA) for p = 1
+Assume that $p = 1$ that is, we have only **one predictor*. We will then classify an observation to the class for which $p_k(x)$ is greatest. To estimate f_k(x), we will first make some assumptions about its form .
+<br> In particular, we assume that $f_k(x)$ is *normal* or *Gaussian*. In the one- normal Gaussian dimensional setting, the normal density takes the form
+$$f_k(x) = \frac{1}{\sigma_k \sqrt{2\pi}} exp\lgroup-
+\frac{1}{2\sigma^2_k}(x-\mu_k)^2\rgroup$$
+where, $\mu_k$ ans $\sigma^2_k$ are the *mean* and *variance* parameters for the *kth* class. 
+<br> For now, let us further assume that $\sigma^2_1 = \sigma^2_2 = \cdots = \sigma^2_k$ : that is, there is a shared
+variance term across all K classes, which for simplicity we can denote by $\sigma^2$ .
+
+$$p_k(x) = \frac{\pi_k \frac{1}{\sigma \sqrt{2\pi}} exp\lgroup-
+\frac{1}{2\sigma^2}(x-\mu_k)^2\rgroup}{\sum_{l=1}^K \pi_l \frac{1}{\sigma \sqrt{2\pi}} exp\lgroup-
+\frac{1}{2\sigma^2}(x-\mu_l)^2\rgroup}$$
+
+$\pi_k$ denotes the *prior probability* that an observation belongs to the *kth* class.
+$$\delta_k(x) = x.\frac{\mu_k}{\sigma^2}-\frac{\mu_k^2}{2\sigma^2} + log(\pi_k)$$
+
+For instance, if $K=2$ and $\pi_1 = \pi_2$, then the Bayes classifier assigns an observation to class 1 if $2x(\mu_1-\mu_2)>\mu_1^2-\mu_2^2$, and to class
+2 otherwise. The Bayes decision boundary is the point for which $\delta_1(x) = \delta_2(x)$ ;one can show that this amounts to  $x = \frac{\mu_1+\mu_2}{2}$
+
+In practice, even if we are quite certain of our assumption that $X$ is drawn from a Gaussian distribution within each class, to apply the Bayes classifier we still have to estimate the parameters $\mu_1,....,\mu_2\,\, ,\,\, \pi_1,...,\pi_2$ and $\sigma^2$. The *Linear Discriminant Analysis (LDA)* method approximates the *Bayes classifier* by plugging estimates for $\pi_k, \,\mu_k ,\, \sigma^2$ In
+particular, the following estimates are used :
+$$\hat{\mu_k} = \frac{1}{n_k}\sum_{i-1}^k x_i$$
+
+$$\hat{\sigma^2} = \frac{1}{n-K}\sum_{k=1}^K \sum_{i:y_i = k} (x_i - \hat{\mu_k})^2$$
+
+where $n$ is the total number of training observations and $n_k$ is the number of training observations in the *kth* class. 
+<br> LDA estimates $\pi_k$ using the proportion of the training observations that belongs to the *kth* class. In other words, $\hat{\pi_k}=n_k/n$ .
+<br> The LDA classifier plugs the estimates and assigns an observation *X = x* to the class for which
+$$\hat\delta_k(x) = x.\frac{\hat\mu_k}{\hat\sigma^2}-\frac{\hat\mu_k^2}{2\hat\sigma^2} + log(\hat\pi_k)$$
+is largest. The word linear in the classifier’s name stems from the fact that the discriminant functions $\hat\delta_k(x)$ are linear functions of $x$ (as opposed to a more complex function of x). 
+
+### Linear Discriminant Analysis for p > 1
+We now extend the LDA classifier to the case of multiple predictors. To do this, we will assume that $X = (X_1, X_2,...,X_p)$ is drawn from a multi-variate *Gaussian* (or *multivariate normal*) distribution, with a class-specific multivariate mean vector and a common covariance matrix.
+
+To indicate that a p-dimensional random variable X has a multi-variate Gaussian distribution, we write **X ∼ N(µ, Σ)**. Here **E(X) = µ** is the mean of X (a vector with p components), and **Cov(X) = Σ** is the *p × p* covariance matrix of X. Formally, the *multivariate Gaussian density* is defined as
+$$f(x) = \frac{1}{(2\pi)^{p/2}|\Sigma|^{1/2}}exp \lgroup -\frac{1}{2}(x-\mu)^T \Sigma ^{-1} (x-\mu) \rgroup$$
+In the case of $p > 1$ predictors, the LDA classifier assumes that the observations in the *kth* class are drawn from a *multivariate Gaussian distribution* $N(\mu_k, \Sigma)$, where $\mu_k$ is a class-specific mean vector, and $\sum$ is a
+covariance matrix that is common to all K classes. Plugging the density function for the *kth* class, $f_k(X = x)$, and performing a little bit of algebra reveals that the *Bayes classifier* assigns an observation $X = x$ to the class for which
+$$\delta_k(x) = x^T \Sigma^{-1} \mu_k -\frac{1}{2}\mu_k^{T} \Sigma^{-1} \mu_k + log \,\pi_k$$
+is largest .
+<br> Three equally-sized Gaussian classes are shown with class-specific mean vectors and a common covariance matrix. The three ellipses represent regions that contain *95 %* of the probability for each of the three classes. The dashed lines are the Bayes decision boundaries. In other words, they represent the set of values x for which $\delta_k(x) = \delta_l(x)$ , i.e
+$$ x^T \Sigma^{-1} \mu_k -\frac{1}{2}\mu_k^{T} \Sigma^{-1} \mu_k =  x^T \Sigma^{-1} \mu_l -\frac{1}{2}\mu_l^{T} \Sigma^{-1} \mu_l$$
+for $k \ne l$.
+
+### Quadratic Descriminant Analysis (QDA)
+As we have discussed, LDA assumes that the observations within each class are drawn from a multivariate Gaussian distribution with a class-specific mean vector and a covariance matrix that is common to all K classes. 
+<br> **Quadratic discriminant analysis (QDA)** provides an alternative approach. Like LDA, the QDA classifier results from assuming that the observations from each class are drawn from a Gaussian distribution, and plugging estimates for the parameters into Bayes’ theorem in order to perform prediction. However, unlike LDA, QDA assumes that each class has its own covariance matrix. That is, it assumes that an observation from the kth class is of the form $X \sim N(\mu_k, \Sigma_k)$, where $\Sigma_k$ is a covariance matrix for the *kth* class. Under this assumption, the Bayes classifier assigns an observation *X = x* to the class for which
+$\delta_k(x) = -\frac{1}{2}(x-\mu_k)^T \Sigma^{-1}\mu_k(x-\mu_k)-\frac{1}{2}log|\Sigma_k|+log\, \pi_k$
+
+= $-\frac{1}{2}x^T \Sigma_k^{-1}\mu_k - \frac{1}{2}\mu_k^T \Sigma_k^{-1}\mu_k - \frac{1}{2}log|\Sigma_k| + log\, \pi_k$
+
+is largest. 
+
+Why would one prefer *LDA* to *QDA*, or vice-versa ? The answer lies in the bias-variance trade-off. When there are *p* predictors, then estimating a covariance matrix requires estimating $p(p+1)/2$ parameters. *QDA* estimates a separate covariance matrix for each class, for a total of $K_p(p+1)/2$ parameters.
+<br> By instead assuming that the *K classes* share a common covariance matrix, the *LDA* model becomes *linear in x*, which means there are $K_p$ linear coefficients to estimate. Consequently, **LDA is a much less flexible classifier than QDA, and so has substantially lower variance** .
+<br> Roughly speaking, **LDA tends to be a better bet than QDA if there are relatively few training observations and so reducing variance is crucial**. In contrast, *QDA is recommended if the training set is very large*, so that the variance of the classifier is not a major concern, or if the assumption of a common covariance matrix for the *K classes* is clearly untenable.
+
+The QDA decision boundary is inferior, because it suffers from higher variance without a corresponding decrease in bias. In contrast, the right-hand panel displays a situation in which the orange class has a *correlation* of *0.7* between the variables and the blue class has a correlation of *−0.7*. Now the Bayes decision boundary is quadratic, and so QDA more accurately approximates this boundary than does LDA.
+
+### Naive Bayes
+$f_k(x)$ is the *p-dimensional* density function for an observation in the *kth* class, for *k = 1,...,K*. In general, estimating a p-dimensional density function is challenging. In LDA, we make a very strong assumption that greatly simplifies the task: we assume that fk is the density function for a multivariate normal random variable with class-specific mean $\mu_k$, and shared covariance matrix $\Sigma$. By contrast, in QDA, we assume that $f_k$ is the density function
+for a multivariate normal random variable with class-specific mean $\mu_k$, and class-specific covariance matrix $\Sigma_k$. By making these very strong assumptions, we are able to replace the very challenging problem of estimating *K* p-dimensional density functions with the much simpler problem of estimating *K* p-dimensional mean vectors and one (in the case of LDA) or *K* (in the case of QDA) (p x p)-dimensional covariance matrices.
+
+The naive Bayes classifier takes a different tack for estimating $f_1(x),...,f_K(x)$. Instead of assuming that these functions belong to a particular family of distributions (e.g. multivariate normal), we instead make a single assumption :
+
+Within the kth class, the p predictors are independent.
+<br> Stated mathematically, this assumption means that for *k = 1,...,K,*
+$$f_{k}(x) = f_{k1}(x_1) \times f_{k2}(x_2) \times \cdots \times f_{kp}(x_p)$$
+where $f_{kj}$ is the density function of the jth predictor among observations in the *kth* class.
+
+Why is this assumption so powerful ?
+<br> Essentially, estimating a p-dimensional density function is challenging because we must consider not only the *marginal distribution* of each predictor — that is, the distribution of each  predictor on its own — but also the joint distribution of the predictors — that is, the association between the different predictors. In the case of a multivariate normal distribution, the association between the different predictors is summarized by the off-diagonal elements of the covariance matrix. However, in general, this association can be very hard to characterize, and exceedingly challenging to estimate. But by assuming that the p covariates are independent within each class, we completely eliminate the need to worry about the association between the p predictors, because we have simply assumed that there is no association between the predictors!
+
+In fact, since estimating a joint distribution requires such a *huge amount of data, naive Bayes is a good choice* in a wide range of settings. Essentially, the naive Bayes assumption introduces some bias, but reduces variance, leading to a classifier that works quite well in practice as a result of the bias-variance trade-off.
+$$Pr(Y=k|X=x) = \frac{\pi_k \times f_{k1}(x_1) \times f_{k2}(x_2) \times \cdots \times \times f_{kp}(x_p)}{\sum_{l=1}^K \pi_l \times f_{l1}(x_1) \times f_{l2}(x_2) \times \cdots \times \times f_{lp}(x_p)}$$
+for $k=1,2,...,K$ .
+<br> To estimate the one-dimensional density function $f_{kj}$ using training data $x_{ij},..,x_{nj}$ , we have a few options .
+- If $X_j$ is quantitative, then we can assume that $X_j|Y = k\sim N(\mu{jk} \,, \, \sigma_{jk}^2)$
+<br> In other words, we assume that within each class, the jth predictor is drawn from a (univariate) normal distribution. While this may sound a bit like QDA, there is one key difference, in that here we are assuming that the predictors are independent; this amounts to QDA with an additional assumption that the class-specific covariance matrix is diagonal.
+
+- If $X_j$ is quantitative, then  another option is to use a non-parametric estimate for $f_{kj}$ . A very simple way to do this is by making a histogram for the observations of the jth predictor within each class. Then we can estimate $f_{kj}(x_j)$ as the fraction of the training observations in the kth class that belong to the same histogram bin as $x_j$ . Alternatively, we can use a kernel density estimator, which is essentially a smoothed version of a histogram .
+<br> For instance, suppose that $X_j ∈$ **{1, 2, 3}**, and we have 100 observations in the *kth* class. Suppose that the *jth* predictor takes on values of *1, 2* and *3* in *32, 55* and *13* of those observations, respectively. Then we can estimate $f_{kj}$ as
+$$
+\quad \quad \quad \quad \quad \quad  032 \quad {if \,\, x_j = 1}\\
+\hat{f_{kj}}(x_j)=\quad \quad 055 \quad {if \,\,x_j = 2}\\
+\quad \quad \quad \quad \quad \quad 0.13 \quad{if\,\, x_j = 3}
+$$
+## A Comparision of Classification Methods
+
+### An Analytical Comparison
+We perform a *analytical* (or mathematical) comparison of *LDA, QDA, Naive Bayes* and *Logistic Regression* . We consider these approaches in a setting with *K* classes, so that we assign an observation to the class that maximizes *Pr(Y=k | X=x)*. Equivalently we can set *K* as the *baseline* class and assign an observation to the class that maximizes
+$$log \lgroup \frac{Pr(Y=k | X=x)}{Pr(Y=K | X=x)} \rgroup \quad ; \quad for \,\,\,k=1,...,K$$
+
+First, for *LDA*, we can make use of *Bayes’ Theorem* as well as the assumption that the predictors within each class are drawn from a *multivariate normal density* with *class-specific mean* and shared *covariance* matrix in order to show that
+$$log \lgroup \frac{Pr(Y=k | X=x)}{Pr(Y=K | X=x)} \rgroup = a_k + \sum_{j=1}^p b_{kj}\,x_{j} \quad ... (i)$$
+
+where, $a_k = log \lgroup \frac{\pi_k}{\pi_K} \rgroup - \frac{1}{2}(\mu_k + \mu_K)^T \Sigma^{-1} (\mu_k - \mu_K)$ and $b_{kj}$ is the $j^{th}$ component of $\Sigma^{-1} (\mu_k - \mu_K)$. Hence *LDA* , like logistic regression, assumes that the log adds of the *posterior probability* is *linear* in $x$.
+
+Using similar calculations, in the *QDA* setting become
+$$log \lgroup \frac{Pr(Y=k | X=x)}{Pr(Y=K | X=x)} \rgroup = a_k + \sum_{j=1}^p b_{kj}x_{j}+\sum_{j=1}^p \sum_{l=1}^p c_{kjl}\,x_j\,x_l \quad ...(ii)$$
+
+where, $a_k,\, b_{kj}$ and $c_{kjl}$ are functions of $\pi_k,\, \pi_K,\, \mu_k,\, \mu_K,\, \Sigma_k$ and $\Sigma_K$. <br> Again as the name suggests, *QDA* assumes that the *log odds* of the *posterior probabilities* is *quadratic* in $x$ .
+
+Finally, we examine in the naive Bayes setting. Recall that in
+this setting, $f_k(x)$ is modeled as a product of *p* one-dimensional functions $f_{kj}(x_j)$ for $j=1,...p$. Hence,
+$$log \lgroup \frac{Pr(Y=k | X=x)}{Pr(Y=K | X=x)} \rgroup = a_k + \sum_{j=1}^p g_{kj}\, x_{j} \quad ...(iii)$$
+
+where, $a_k = log \lgroup \frac{\pi_k}{\pi_K} \rgroup$ and $g_{kj}(x_j)=log \lgroup \frac{f_{kj}(x_j)}{f_{Kj}(x_j)} \rgroup$. Hence, the right-hand side of above equation takes the form of a *generalized additive model* .
+
+Inspection of (i), (ii), and (iii) yields the following observations about *LDA, QDA* and *Naive Bayes* :
+
+- *LDA* is a special case of *QDA* with $c_{kjl}=0$ for all $j=1,...,p\,\,\, , \,\, l=1,...,p \,\, and\,\,k = 1,...,K$ (Of course, this is not surprising, since LDA is simply a restricted version of QDA with $\Sigma_1= \cdots= \Sigma_K = \Sigma$)
+
+- Any classifier with a *linear decision boundary* is a special case of *naive Bayes* with $g_{kj}(x_j) = b_{kj}\,x_j$ <br> In particular, this means that *LDA* is a special case of *naive Bayes!* This is not at all obvious from the descriptions of *LDA and naive Bayes* earlier in the chapter, since each method makes very different assumptions: 
+<br> *LDA* assumes that the features are *normally distributed* with a common within-class
+*covariance matrix*, and *naive Bayes* instead assumes *independence of the features*
+
+- If we model $f_{kj}(x_j)$ in the *naive Bayes* classifier using a one-dimensional *Gaussian distribution* $N(\mu_{kj} , \sigma_j^2)$, then we end up with $g_{kj}(x_j) = b_{kj}\,x_j$ where $b_{kj} = (\mu_{kj} − \mu_{Kj})/\sigma_j^2$. In this case, *naive Bayes* is actually a special case of *LDA* with $\Sigma$ restricted to be a diagonal matrix with $j^{th}$ diagonal element equal to $\sigma_j^2$.
+
+- Neither *QDA* nor *Naive Bayes* is a special case of the other. *Naive Bayes* can produce a more flexible fit, since any choice can be made for $g_{kj}(x_j)$. However, it is restricted to a purely additive fit, in the sense that in (iii), a function of $x_j$ is added to a function of $x_l$, for $j \ne l$ ; however, these terms are never multiplied. By contrast, QDA includes multiplicative terms of the form $c_{kjl}\,x_j\,x_l$. Therefore, QDA has the potential to be more accurate in settings where interactions among the predictors are important in discriminating between classes.
+
+None of these methods uniformly dominates the others: in any setting, the choice of method will depend on the true distribution of the predictors in each of the *K classes*, as well as other considerations, such as the values of *n* and *p*. The latter ties into the bias-variance trade-off.
+<br> From Logistic Regression :
+$$log \lgroup \frac{Pr(Y=k | X=x)}{Pr(Y=K | X=x)} \rgroup = \beta_{k0} + \sum_{j=1}^p \beta_{kj}\, x_{j}$$
+
+This is identical to the *linear form of LDA* (ii): in both cases, $log \lgroup \frac{Pr(Y=k | X=x)}{Pr(Y=K | X=x)}  \rgroup$ is a linear function of the predictors. In *LDA*, the coefficients in this linear function to functions of estimates for $\pi_k,\, \pi_K,\, \mu_k,\, \mu_K$ and $\Sigma$ obtained by assuming that $X_1,...,X_p$ follows a *normal distribution* within each class. By contrast, in *logistic regression*, the coefficients are chosen to maximize the likelihood function.
+<br> Thus, we expect *LDA* to outperform *logistic regression* when the *normality* assumption (appxrox.) holds, and we expect logistic regression to perform better when it does not.
+
+In order to make a prediction for an observation $X = x$, the training observations that are closest to $x$ are identified. Then $X$ is assigned to the class to which the plurality of these observations belong. Hence $KNN$ is a completely non-parametric approach : no assumptions are made about the shape of the decision boundary. We make the following observations about $KNN$ :
+
+- Because **KNN** is completely non-parametric, we can expect this approach to boundary is *highly non-linear*, provided that $n$ is *very* large and $p$ is *small*. 
+
+- In order to provide accurate classification, **KNN** requires a *lot* of observations relative to the number of predictors—that is, $n$ much *larger* than $p$. This has to do with the fact that *KNN* is *non-parametric*, and thus tends to reduce the bias while incurring a lot of variance.
+
+- In settings where the decision boundary is non-linear but *n* is only *modest* or *p* is *not very small*, then **QDA** may be *preferred* to **KNN**.
+<br> This is because *QDA* can provide a *non-linear decision boundary* while taking advantage of a parametric form, which means that it requires a smaller sample size for accurate classification, relative to KNN.
+
+- Unlike logistic regression, *KNN* does *not tell* us which *predictors* are important, so we don't get a table of coefficients.
+
+### An Empirical Comparison
+we compare the *empirical* (practical) performance of *Logistic Regression, LDA, QDA, Naive Bayes* and *KNN*.
+<br> We generated data from six different *scenarios*, each of which involves a binary (two-class) classification problem.
+<br> In *three* of the scenarios, the Bayes decision *boundary is linear*, and in the *remaining* scenarios it is *non-linear*.
+
+**Scenario** are on **ISLR**'s Page **162/607**
+
+## Generalized Linear Models
+
+We assumed that *response* $Y$ is *quantitative* and *explored* the use of *least squares linear regression* to predict *Y*. However, we may sometimes be faced with situations in which $Y$ is neither *quantitative* nor *qualitative* and so neither *linear regresion* .
+
+### Linear Regression on the Bikeshare Data
+
+### Poisson Regression on the Bikeshare Data
+
+
+### Generalized Linear Models in Greater Generality
+We have now discussed three types of regression models : *linear, logistic and Poisson*. These approaches share some common characteristics :
+
+1. Each approach uses *predictors* $X_1,...,X_p$ to predict a *response* $Y$ .
+<br> We assume that, conditional on $X_1,...,X_p$ , $Y$ belongs to a certain family of distributions. 
+<br> For *Linear Regression*, we typically assume that
+*Y* follows a *Gaussian* or *Normal Distribution*. i.e $Y \stackrel{LM}{\sim}N(\mu,\, \sigma^2)$
+<br> For *Logistic Regression*, we assume that *Y* follows a *Bernoulli Distribution*. i.e. $Y \stackrel{Log}{\sim}Bernoulli(p, \ (1-p))$
+<br> For *Poisson Regression* we assume that **Y* follows a *Poisson Distribution*. i.e. $Y \stackrel{Pois}{\sim}Poisson(\lambda)$
+
+2. Each approach models the mean of *Y* as a function of the predictors. In *Linear Regression*, the mean of *Y* takes the form
+$$E(Y|X_1,...,X_p)=\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p \quad \cdots (i)$$
+
+i.e. it is a linear function of the predictors. 
+<br> For *Logistic Regression*, the mean instead takes the form
+$$E(Y|X_1,...,X_p) = Pr(Y=1|X_1,...,X_p)$$
+
+$$= \frac{e^{\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p}}{1 + e^{\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p}} \quad \cdots (ii)$$
+
+For *Poisson Regression* it takes the form
+$$E(Y|X_1,...,X_p) = \lambda(X_1,...,X_p) = e^{\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p} \quad \cdots (iii)$$
+
+Equations *(i)–(iii)* can be expressed using a *link function*, $\eta$, which link function applies a transformation to $E(Y |X_1,...,X_p)$ so that the transformed mean is a linear function of the predictors. That is,
+$$\eta(E(Y|X_1,...,X_p))=\beta_0 + \beta_1X_1 + \cdots + \beta_pX_p$$
+
+The link functions for **Linear, Logistic** and **Poisson Regression** are $\eta(\mu) = \mu$ , $\eta(\mu) = log\lgroup \frac{\mu}{(1-\mu)} \rgroup$ and $\eta(\mu) = log(\mu)$ , respectively .
+
+The *Gaussian, Bernoulli* and *Poisson Distributions* are all members of a wider class of distributions, known as the *exponential family*. Other well-known members of this family are the *exponential distribution*, the *Gamma Distribution*, and the *Negative Binomial Distribution*. In general, we can perform a *regression* by modeling the *response* $Y$ as coming from a particular member of the *exponential* family and then transforming the mean of the response so that the transformed mean is a linear function of the predictors
+via (iii). **Any regression approach that follows this very general recipe is known as a Generalized Linear Model(GLM)**. <br> Thus, *Linear Regression, Logistic Regression* and *Poisson Regression* are three examples of *GLMs* . Other examples not covered here include *Gamma regression* and *negative binomial regression* .
+
+## Lab : Classification Methods
+
+#### The Stock Market Data
+We will begin by examining some numerical and graphical summaries of the *Smarket* data, which is part of the *ISLR2* library. This data set consists of percentage returns for the S&P 500 stock index over 1, 250 days, from the
+beginning of 2001 until the end of 2005. For each date, we have recorded the percentage returns for each of the five previous trading days, *Lag1* through *Lag5*. We have also recorded *Volume* (the number of shares traded on the previous day, in billions), *Today* (the percentage return on the date
+in question) and *Direction* (whether the market was Up or Down on this date). Our goal is to predict Direction (a qualitative response) using the other features.
+
+```{r , warning=FALSE, message=FALSE}
+# Load the Library
+library(ISLR2)
+
+# load Data
+data("Smarket")
+
+# names of columns
+names(Smarket)
+
+# Dimension of Data
+dim(Smarket)
+
+# head of data
+head(Smarket)
+
+# Summary of Data
+summary(Smarket)
+
+# Matrix Plot
+pairs(Smarket)
+
+# Correlation of Numeric Data 
+cor(Smarket[, -9]) # 9th Col is not numeric
+```
+
+As one would expect, the correlations between the lag variables and today’s returns are close to zero. In other words, there appears to be little correlation between today’s returns and previous days’ returns. The only substantial correlation is between Year and Volume. By plotting the data, which is ordered chronologically, we see that Volume is increasing over time. 
+<br> In other words, the average number of shares traded daily increased from 2001 to 2005 .
+```{r, message=FALSE}
+# Convert the Data into attach
+attach(Smarket)
+
+# Plot The Volume Column
+plot(Volume)
+```
+
+### Logistic Regression
+We will fit a logistic regression model in order to predict Direction using *Lag1* through *Lag5* and Volume. The `glm()` function can be used to fit many types of *generalized linear models*, including *logistic regression*. The syntax of the `glm()` function is similar to that of `lm()`, except that we must pass in the argument `family = binomial` in order to tell R to run a logistic regression rather than some other type of generalized linear model
+
+**Model :** 
+$$Direction = \frac{e^{\beta_0 + \beta_1\cdot Lag1 + \beta_2\cdot Lag2 + \beta_3\cdot Lag3 + \beta_4\cdot Lag4 + \beta5\cdot Lag5 + \beta_6\cdot Volume}}{1 + e^{\beta_0 + \beta_1\cdot Lag1 + \beta_2\cdot Lag2 + \beta_3\cdot Lag3 + \beta_4\cdot Lag4 + \beta5\cdot Lag5 + \beta_6\cdot Volume}} + \epsilon$$
+
+```{r}
+# Fit the Logistic Regression
+log_m <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume ,
+data = Smarket , 
+family = binomial)
+
+# Summary of Model
+summary(log_m)
+```
+
+**Fitted Model :**
+$$\widehat{Direction} = \frac{e^{-0.126 - 0.073\cdot Lag1 - 0.042\cdot Lag2 + 0.011\cdot Lag3 + 0.009\cdot Lag4 + 0.010\cdot Lag5 + 0.0135\cdot Volume}}{1 + e^{-0.126 - 0.073\cdot Lag1 - 0.042\cdot Lag2 + 0.011\cdot Lag3 + 0.009\cdot Lag4 + 0.010\cdot Lag5 + 0.0135\cdot Volume}}$$
+
+The smallest p-value here is associated with *Lag1*. The negative coefficient for this predictor suggests that if the market had a positive return yesterday, then it is less likely to go up today. 
+<br> However, at a value of *0.15*, the p-value is still relatively large, and so there is no clear evidence of a real association between *Lag1 and Direction*.
+
+**Coefficient :**
+
+```{r}
+# Coefficient
+coef(log_m)
+
+# Summary of Coefficient
+summary(log_m)$coef
+
+summary(log_m)$coef[, 4]
+```
+
+**Predicted Values :**
+<br>
+- `The predict(`) function can be used to predict the probability that the market will go up, given values of the predictors. The `type = "response"` option tells R to output probabilities of the form $P(Y = 1|X)$, as opposed to other information such as the logit. If no data set is supplied to the *predict()* function, then the probabilities are computed for the training data that was used to fit the *logistic regression model* .
+<br>  We know that these values correspond to the probability of the market going up, rather than down, because the `contrasts()` function indicates that R has created a dummy variable with a 1 for *Up*.
+```{r}
+# Predicted Values
+glm.probs <- predict (log_m , type = "response")
+
+# First 10 predicted Values
+glm.probs[1:10]
+
+# Direction Contast
+contrasts(Direction)
+```
+
+In order to make a prediction as to whether the market will go up or down on a particular day, we must convert these predicted probabilities into class labels, Up or Down.
+<br>The following two commands create a vector
+of class predictions based on whether the predicted probability of a market increase is greater than or less than 0.5.
+```{r}
+glm.pred <- rep (" Down ", 1250)
+
+glm.pred[glm.probs > 0.5] = "Up"
+```
+
+The first command creates a vector of *1,250* `Down` elements. The second line transforms to Up all of the elements for which the predicted probability of a market increase exceeds 0.5. <br> Given these predictions, the `table()` function can be used to produce a *confusion matrix* in order to determine how many observations were correctly or incorrectly classified.
+```{r}
+table (glm.pred , Direction)
+```
+
+The *diagonal elements* of *the confusion matrix* indicate *correct predictions*, while the *off-diagonals* represent *incorrect predictions*.
+
+Hence our model correctly predicted that the market would go up on *507* days and that it would go down on *145* days, for a total of 507 + 145 = *652* correct predictions. 
+
+The `mean()` function can be used to compute the fraction of days for which the prediction was correct. 
+```{r}
+(507 + 145) / 1250
+
+mean(glm.pred == Direction)
+```
+
+In this case, *logistic regression* correctly predicted the movement of the market $40.5\%$ of the time.
+ 
+At first glance, it appears that the logistic regression model is working a little better than random guessing. 
+<br> However, this result is misleading because we trained and tested the model on the same set of *1,250* observations. In other words, $100\% − 40.5\% = 59.5\%$, is the *training* error rate . 
+<br> In order to better assess the accuracy of the logistic regression model in this setting, we can fit the model using part of the data, and then examine how well it predicts the held out data. This will yield a more realistic error rate, in the sense that in practice we will be interested in our model’s performance not on the data that we used to fit the model, but rather on days in the future for which the market’s movements are unknown.
+
+To implement this strategy, we will first create a vector corresponding to the observations from *2001 through 2004*. We will then use this vector to create a held out data set of observations from *2005*.
+```{r}
+train <- (Year < 2005)
+
+Smarket.2005 <- Smarket[!train, ]
+
+dim(Smarket.2005)
+
+Direction.2005 <- Direction[!train]
+```
+
+The Object *train* is a vector of 1,250 elements, corresponding to the observations in our data set. The elements of the vector that correspond to observations that occurred before 2005 are set to *TRUE*, whereas those that correspond to observations in 2005 are set to *FALSE*.  The object train is a *Boolean* vector, since its elements are TRUE and FALSE. For instance, the command *Smarket[train, ]* would pick out a *sub-matrix* of the stock market data set, corresponding only to the dates before 2005, since those are the ones for which the elements of train are TRUE. The $!$ symbol can be  used to reverse all of the elements of a Boolean vector.
+
+We now fit a logistic regression model using only the subset of the observations that correspond to dates before 2005, using the subset argument. We then obtain predicted probabilities of the stock market going up for each of the days in our test set—that is, for the days in 2005.
+```{r}
+glm.fits <- glm (Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume ,
+data = Smarket , 
+family = binomial , 
+subset = train)
+
+glm.probs <- predict (glm.fits , Smarket.2005,
+type = "response")
+```
+
+Notice that we have trained and tested our model on two completely separate data sets: training was performed using only the dates before 2005 and testing was performed using only the dates in 2005. Finally, we compute the predictions for 2005 and compare them to the actual movements of the market over that time period.
+
+```{r}
+glm.pred <- rep("Down", 252)
+
+glm.pred[glm.probs > .5] <- "Up"
+
+table(glm.pred , Direction.2005)
+
+# Mean equal to Direction.2005
+mean(glm.pred == Direction.2005)
+
+# Mean not equal to Direction.2005
+mean(glm.pred != Direction.2005)
+```
+The results are rather disappointing : the test error rate is $52\%$, which is worse than random guessing
+
+We recall that the logistic regression model had very underwhelming p-values associated with all of the predictors, and that the smallest p-value, though not very small, corresponded to *Lag1*. Perhaps by removing the variables that appear not to be helpful in predicting Direction, we can obtain a more effective model.
+```{r}
+glm.fits <- glm (Direction ~ Lag1 + Lag2 , data = Smarket ,
+family = binomial , subset = train)
+
+glm.probs <- predict (glm.fits , Smarket.2005,
+type = "response")
+
+glm.pred <- rep("Down", 252)
+
+glm.pred[glm.probs > 0.5] <- "Up"
+
+table (glm.pred , Direction.2005)
+
+mean (glm.pred == Direction.2005)
+
+106 / (106 + 76)
+```
+Now the results appear to be a little better : $56\%$ of the daily movements have been correctly predicted. It is worth noting that in this case, a much simpler strategy of predicting that the market will increase every day will also be correct $56\%$ of the time.
+<br> Hence, in terms of overall error rate, the *logistic regression* method is *no better* than the *naive* approach. However, the *confusion matrix* shows that on days when *logistic regression predicts* an increase in the market, it has a $58\%$ accuracy rate.
+
+Suppose that we want to predict the returns associated with particular values of `Lag1` and `Lag2`. In particular, we want to predict Direction on a day when `Lag1` and `Lag2` equal *1.2* and *1.1*, respectively, and on a *day* when
+they equal *1.5* and *−0.8*. 
+<br> We do this using the `predict()` function .
+
+```{r}
+predict(glm.fits, newdata = data.frame(Lag1 = c(1.2, 1.5),
+                                       Lag2 = c(1.1, -0.8)), type = "response")
+```
+
+### Linear Discriminant Analysis (LDA)
+Now we will perform $LDA$ on the *Smarket* data. 
+<br> In R, we fit an LDA model using the $lda()$ function, which is part of the *MASS* library. Notice that the syntax for the `lda()` function is identical to that of `lm()`, and to that of `glm()` except for the absence of the family option. 
+<br> We fit the model using only the observations before 2005.
+```{r, warning=FALSE, message=FALSE}
+library (MASS)
+
+lda.fit <- lda(Direction ~ Lag1 + Lag2 , data = Smarket , subset = train)
+
+lda.fit
+```
+
+$\hat{\pi_i}$ is  *Prior probabilities of groups*
+<br> The *LDA* output indicates that $\hat{\pi_1} = 0.492$ and $\hat{\pi_2} = 0.508$ ; in other words,$49.2\%$ of the training observations correspond to days during which the market went down.
+
+It also provides the group means ; these are the average of each predictor within each class, and are used by LDA as estimates of $\mu_k$. These suggest that there is a tendency for the previous 2 days’ returns to be negative on days when the market increases, and a tendency for the previous days’ returns to be positive on days when the market declines. 
+
+The *coefficients of linear discriminants* output provides the linear combination of *Lag1* and *Lag2* that are used to form the LDA decision rule. 
+<br> In other words, these are the multipliers of the elements of $X=x$. If $-0.642 \times Lag1 − 0.514 \times Lag2$ is large, then the *LDA* classifier will predict a market increase and if it is small, then the *LDA* classifier will predict a market decline.
+
+
+The $plot()$ function produces plots of the *linear discriminants*, obtained by computing $-0.642 \times Lag1 − 0.514 \times Lag2$ for each of the training observations. The Up and Down observations are displayed separately.
+
+```{r}
+# Plot
+plot(lda.fit)
+```
+
+The $predict()$ function returns a list with three elements. <br> The first element, $class$, contains `LDA’s predictions` about the movement of the market.
+<br> The second element, $posterior$, is a *matrix* whose $k^{th}$ column contains the `posterior probability` that the corresponding observation belongs to the $k^{th}$ class
+<br> Finally, $x$ contains the *linear discriminants*,
+described earlier.
+
+```{r}
+lda.pred <- predict(lda.fit , Smarket.2005)
+
+names (lda.pred)
+```
+The *LDA* and *logistic regression* predictions
+are almost identical.
+```{r}
+lda.class <- lda.pred$class
+
+# Table
+table(lda.class, Direction.2005)
+
+# Mean 
+mean(lda.class == Direction.2005)
+```
+Applying a $50 \%$ threshold to the posterior probabilities allows us to recreate the predictions contained in *lda.pred$class*.
+```{r}
+sum(lda.pred$posterior[, 1] >= 0.5)
+
+sum (lda.pred$posterior[, 1] < 0.5)
+```
+Notice that the posterior probability output by the model corresponds to the probability that the market will decrease :
+
+```{r}
+lda.pred$posterior[1:20, 1]
+
+lda.class[1:20]
+```
+If we wanted to use a posterior probability threshold other than $50 \%$ in order to make predictions, then we could easily do so. 
+<br> For instance, suppose that we wish to predict a market decrease only if we are very certain that the market will indeed decrease on that day—say, if the posterior probability
+is at least $90 \%$ .
+```{r}
+sum (lda.pred$posterior[, 1] > 0.9)
+```
+No days in 2005 meet that threshold! In fact, the greatest posterior probability of decrease in all of 2005 was $52.02\%$
+
+### Quadratic Discriminant Analysis
+We will now fit a $QDA$ model to the *Smarket* data. QDA is implemented in R using the $qda()$ function, which is also part of the $MASS$ library. The `qda()` syntax is identical to that of `lda()` .
+```{r}
+qda.fit <- qda (Direction ~ Lag1 + Lag2 , data = Smarket ,
+subset = train)
+
+qda.fit
+```
+The output contains the group means. But it does not contain the coefficients of the *linear discriminants*, because the *QDA* classifier involves a quadratic, rather than a linear, function of the predictors. 
+<br> The `predict()` function works in exactly the same fashion as for *LDA*.
+```{r}
+qda.class <- predict (qda.fit , Smarket.2005)$class
+
+table (qda.class , Direction.2005)
+
+mean (qda.class == Direction.2005)
+```
+Interestingly, the *QDA predictions* are accurate almost $60\%$ of the time, even though the 2005 data was not used to fit the model. This level of accuracy is quite impressive for stock market data, which is known to be quite hard to model accurately. 
+<br> This suggests that the *quadratic form* assumed by QDA may capture the true relationship more accurately than the linear forms assumed by *LDA* and *logistic regression*. 
+<br> However, we recommend evaluating this method’s performance on a larger test set before betting that this approach will consistently beat the market!
+
+
+### Naive Bayes
+Next, we fit a *naive Bayes* model to the *Smarket* data. 
+<br> Naive Bayes is implemented in R using the $naiveBayes()$ function, which is part of the $e1071$ `naiveBayes()` library. <br> The syntax is identical to that of `lda()` and `qda()`. <br> By default, this implementation of the naive Bayes classifier models each quantitative feature using a *Gaussian distribution*.
+<br> However, a kernel density method can also be used to estimate the distributions.
+
+```{r, warning=FALSE, message=FALSE}
+library(e1071)
+
+nb.fit <- naiveBayes (Direction ~ Lag1 + Lag2 , data = Smarket , subset = train)
+
+nb.fit
+```
+The output contains the *estimated mean* and *standard deviation* for each variable in each class. 
+<br> For example, the *mean* for *Lag1* is $0.0428$ for $Direction=Down$, and the *standard deviation* is $1.23$ . We can easily verify this :
+```{r}
+mean(Lag1[train][Direction[train] == "Down"])
+
+sd(Lag1[train][Direction[train] == "Down"])
+```
+
+The `predict()` function is straight-forward.
+```{r}
+nb.class <- predict(nb.fit, Smarket.2005)
+
+table(nb.class, Direction.2005)
+
+mean(nb.class == Direction.2005)
+```
+*Naive Bayes* performs very well on this data, with accurate predictions over $59\%$ of the time. This is slightly worse than *QDA*, but much better than *LDA*.
+
+The `predict()` function can also generate estimates of the probability that each observation belongs to a particular class.
+```{r}
+nb.preds <- predict(nb.fit, Smarket.2005, type = "raw")
+
+nb.preds[1:5 , ]
+```
+
+### K-Nearest Neighbors
+We will now perform **KNN** using the $knn()$ function, which is part of the *class* library. This function works rather differently from the other model fitting functions that we have encountered thus far. Rather than a two-step
+approach in which we first fit the model and then we use the model to make predictions, `knn()` forms predictions using a single command. The function requires four inputs.
+
+1. A matrix containing the predictors associated with the training data, labeled $train.X$ below.
+
+2. A matrix containing the predictors associated with the data for which we wish to make predictions, labeled $test.X$ below.
+
+3. A vector containing the class labels for the training observations, labeled $train.Direction$ below.
+
+4. A value for $K$, the number of nearest neighbors to be used by the classifier.
+
+We use the `cbind()` function, short for column bind, to bind the *Lag1* and *cbind()* *Lag2* variables together into two matrices, one for the training set and the other for the test set .
+```{r, warning=FALSE, message=FALSE}
+library (class)
+train.X <- cbind(Lag1 , Lag2)[train , ]
+
+test.X <- cbind(Lag1 , Lag2)[!train , ]
+
+train.Direction <- Direction[train]
+```
+
+Now the `knn()` function can be used to predict the market’s movement for the dates in 2005. We set a random seed before we apply *knn()* because if several observations are tied as nearest neighbors, then R will randomly break the tie. 
+<br> Therefore, a seed must be set in order to ensure reproducibility of results.
+```{r}
+set.seed(1)
+
+knn.pred <- knn(train.X, test.X, train.Direction, k = 1)
+
+table(knn.pred, Direction.2005)
+
+(83 + 43) / 252
+```
+
+The results using $K=1$ are not very good, since only $50\%$ of the observations are correctly predicted. Of course, it may be that $K=1$ results in an overly flexible fit to the data. Below, we repeat the analysis using $K=3$ .
+```{r}
+knn.pred <- knn(train.X, test.X, train.Direction, k = 3)
+
+table(knn.pred, Direction.2005)
+
+mean(knn.pred == Direction.2005)
+```
+The results have improved slightly. But increasing $K$ further turns out to provide no further improvements. It appears that for this data, **QDA** provides the best results of the methods that we have examined so far.
+
+$KNN$ does not perform well on the S*market* data but it does often provide impressive results. 
+<br> As an example we will apply the KNN approach to the
+**Caravan** data set, which is part of the **ISLR2** library. <br> This data set includes 85 predictors that measure demographic characteristics for 5,822 individuals.
+<br> The response variable is Purchase, which indicates whether or not a given individual p*urchases* a *caravan insurance policy*. In this data set, only **6%** of people purchased caravan insurance.
+
+```{r, message=FALSE}
+data("Caravan")
+
+dim(Caravan)
+
+attach (Caravan)
+
+summary (Purchase)
+
+348/5822
+```
+
+Because the $KNN$ classifier predicts the class of a given test observation by identifying the observations that are nearest to it, the scale of the variables matters. Variables that are on a large scale will have a much larger effect on the *distance* between the observations, and hence on the KNN classifier, than variables that are on a small scale. For instance, imagine a data set that contains two variables, *salary* and *age* (measured in dollars and years, respectively).
+
+A good way to handle this problem is to $standardize$ the data so that all standardize variables are given a *mean of zero* and a *standard deviation of one*. Then all variables will be on a comparable scale. The $scale()$ function does just this. In standardizing the data, we *exclude column 86*, because that is the qualitative *Purchase* variable.
+
+```{r}
+standardized.X <- scale(Caravan[, -86])
+
+var(Caravan[, 1])
+
+var(Caravan[, 2])
+
+var(standardized.X[, 1])
+
+var(standardized.X[, 2])
+```
+
+Now every column of standardized.X has a standard deviation of one and a mean of zero.
+
+We now split the observations into a test set, containing the first 1,000 observations, and a training set, containing the remaining observations. We fit a KNN model on the training data using *K = 1*, and evaluate its performance on the test data.
+
+```{r}
+test <- 1:1000
+
+train.X <- standardized.X[-test , ]
+
+test.X <- standardized.X[test , ]
+
+train.Y <-Caravan$Purchase[-test]
+ 
+test.Y <-  Caravan$Purchase[test]
+
+set.seed(1)
+
+knn.pred <- knn(train.X, test.X, train.Y, k = 1)
+
+mean(test.Y != knn.pred)
+
+mean(test.Y != "No")
+```
+The vector *test* is numeric, with values from 1 through 1, 000. Typing *standardized.X[test, ]* yields the submatrix of the data containing the observations whose indices range from 1 to 1,000, whereas typing *standardized.X[-test, ]* yields the submatrix containing the observations whose indices do not range from 1 to 1,000. The *KNN* error rate on the
+1,000 test observations is just under *12%*. At first glance, this may appear to be fairly good. However, since only *6%* of customers purchased insurance, we could get the error rate down to *6%* by always predicting No regardless of the values of the predictors
+
+It turns out that *KNN* with *K=1* does far better than random guessing among the customers that are predicted to buy insurance. 
+
+```{r}
+table(knn.pred, test.Y)
+
+9/(68+9)
+```
+Among *77* such customers, *9, or 11.7 %*, actually do purchase insurance. This is double the rate that one would obtain from random guessing.
+
+Using *K=3*, the success rate increases to *19%*, and with *K=5* the rate is *26.7%*. 
+<br> This is over four times the rate that results from random guessing. It appears that *KNN* is finding some real patterns in a difficult data set!
+```{r}
+knn.pred <- knn(train.X, test.X, train.Y, k = 3)
+
+table(knn.pred , test.Y)
+
+5/26
+
+knn.pred <- knn(train.X, test.X, train.Y, k = 5)
+
+table(knn.pred , test.Y)
+
+4/15
+```
+However, while this strategy is cost-effective, it is worth noting that only *15* customers are predicted to purchase insurance using *KNN* with *K=5.* 
+<br> In practice, the insurance company may wish to expend resources on convincing more than just *15* potential customers to buy insurance.
+
+As a comparison, we can also fit a *logistic regression model* to the data. If we use *0.5* as the predicted probability cut-off for the classifier, then we have a problem: only seven of the test observations are predicted to purchase insurance.
+<br> However, we are not required to use a cut-off of *0.5*. If we instead predict a purchase any time the predicted probability of purchase exceeds *0.25*, we get much
+better results: we predict that *33* people will purchase insurance, and we are correct for about *33%* of these people. This is over five times better than random guessing
+
+```{r}
+# glm.fits <- glm (Purchase ~ ., data = Caravan , family = binomial , subset = -test)
+# Warning message: glm.fits: fitted probabilities numerically 0 or 1 occurred
+
+glm.probs <- predict(glm.fits , Caravan[test , ], type = "response")
+
+glm.pred <- rep("No", 1000)
+
+glm.pred[glm.probs > 0.5] <- " Yes "
+
+#table(glm.pred , test.Y)
+
+glm.pred <- rep("No", 1000)
+
+glm.pred[glm.probs > 0.25] <- " Yes "
+
+# table(glm.pred , test.Y)
+
+11 / (22 + 11)
+```
+### Poisson Regression
+Finally, we fit a **Poisson Regression Model** to the *Bikeshare* data set, which measures the number of bike rentals (*bikers*) per hour in Washington, DC.
+The data can be found in the *ISLR2* library.
+```{r}
+data("Bikeshare")
+
+dim(Bikeshare)
+
+names(Bikeshare)
+```
+We begin by fitting a least squares *linear regression model* to the data.
+```{r}
+mod.lm <- lm(bikers ~ mnth + hr + workingday + temp + weathersit , data = Bikeshare)
+
+summary(mod.lm)
+```
+
+Due to space constraints, we truncate the output of `summary(mod.lm)`. In mod.lm, the first level of *hr(0)* and *mnth(Jan)* are treated as the baseline values, and so no coefficient estimates are provided for them: implicitly,
+their coefficient estimates are zero, and all other levels are measured relative to these baselines. For example, the *Feb* coefficient of *6.845* signifies that, holding all other variables constant, there are on average about *7* more  riders in February than in January. Similarly there are about *16.5* more riders in March than in January.
+
+Different coding of the variables hr and mnth, as follows :
+
+```{r}
+contrasts(Bikeshare$hr) = contr.sum(24)
+
+contrasts(Bikeshare$mnth) = contr.sum (12)
+
+mod.lm2 <- lm(bikers ~ mnth + hr + workingday + temp + weathersit , data = Bikeshare)
+
+summary (mod.lm2)
+```
+
+What is the difference between the two codings ?
+<br> In *mod.lm2*, a coefficient estimate is reported for all but the last level of *hr* and *mnth*. Importantly, in *mod.lm2*, the coefficient estimate for the last level of mnth is not zero: instead, it equals the *negative of the sum of the coefficient estimates for all of the other levels*. 
+<br> Similarly, in *mod.lm2*, the coefficient estimate for the last level of hr is the negative of the sum of the coefficient estimates for all of the other levels. This means that the coefficients of hr and mnth in *mod.lm2* will always sum to zero, and can be interpreted as the difference
+from the mean level. 
+<br> For example, the coefficient for *January of −46.087* indicates that, holding all other variables constant, there are typically 46 fewer riders in January relative to the yearly average.
+
+It is important to realize that the choice of coding really does not matter, provided that we interpret the model output correctly in light of the coding used. For example, we see that the predictions from the linear model are the same regardless of coding :
+```{r}
+sum((predict(mod.lm) - predict(mod.lm2))^2)
+```
+The sum of squared differences is zero. We can also see this using the $all.equal()$ function :
+```{r}
+all.equal(predict (mod.lm), predict (mod.lm2))
+```
+The coefficients for January through November can be obtained directly from the mod.lm2 object. The coefficient for December must be explicitly computed as the negative sum of all the other months
+```{r}
+coef.months <- c(coef (mod.lm2)[2:12],
+                  -sum ( coef (mod.lm2)[2:12]))
+```
+
+To make the plot, we manually label the x-axis with the names of the months.
+```{r}
+plot (coef.months , xlab = " Month ", ylab = " Coefficient ",
+xaxt = "n", col = " blue ", pch = 19, type = "o")
+
+axis(side = 1, at = 1:12, labels = c("J", "F", "M", "A",
+                                     "M", "J", "J", "A", 
+                                     "S","O", "N", "D"))
+```
+
+Reproducing the right-hand side of Figure 4.13 follows a similar process.
+
+```{r}
+coef.hours <- c(coef (mod.lm2)[13:35],
+                 -sum ( coef (mod.lm2)[13:35]))
+
+plot(coef.hours , xlab = " Hour ", ylab = " Coefficient ",
+     col = " blue ", pch = 19, type = "o")
+```
+
+Now, we consider instead fitting a *Poisson regression* model to the *Bikeshare* data. Very little changes, except that we now use the function $glm()$ with the argument $family = poisson$ to specify that we wish to fit a *Poisson regression model* :
+```{r}
+mod.pois <- glm(bikers ~ mnth + hr + workingday + temp + weathersit ,
+                data = Bikeshare , family = poisson)
+
+summary(mod.pois)
+```
+
+We can plot the coefficients associated with mnth and hr, in order to reproduce
+```{r}
+coef.mnth <- c( coef (mod.pois)[2:12],
+                -sum ( coef (mod.pois)[2:12]))
+
+plot(coef.mnth , xlab = " Month ", ylab = " Coefficient ",
+     xaxt = "n", col = " blue ", pch = 19, type = "o")
+
+axis(side = 1, at = 1:12, labels = c("J", "F", "M", "A", 
+                                     "M", "J", "J", "A",
+                                     "S", "O", "N", "D"))
+
+coef.hours <- c(coef(mod.pois)[13:35],
+                -sum ( coef (mod.pois)[13:35]))
+
+plot (coef.hours , xlab = " Hour ", ylab = " Coefficient ",
+    col = " blue ", pch = 19, type = "o")
+```
+
+We can once again use the `predict()` function to obtain the fitted values (predictions) from this *Poisson regression model*. However, we must use the argument `type = "response"` to specify that we want R to output $e^{\hat{\beta_0} + \hat{\beta_1}X_1 + \hat{\beta_2X_2 + \cdots + \hat{\beta_p}X_p}}$ rather than $\hat{\beta_0} + \hat{\beta_1}X_1 + \hat{\beta_12X_2 + \cdots + \hat{\beta_p}X_p}$ , which it will output by default.
+
+
+```{r}
+plot(predict(mod.lm2), 
+     predict(mod.pois , type = "response"))
+
+abline(0, 1, col = 2, lwd = 3)
+```
+
+The predictions from the Poisson regression model are correlated with those from the linear model; however, the former are non-negative. As a result the Poisson regression predictions tend to be larger than those from the linear model for either very low or very high levels of ridership.
+
+In this section, we used the $glm()$ function with the argument $family = poisson$ in order to perform Poisson regression. 
+<br> Earlier in this lab we used the `glm()` function with $family = binomial$ to perform *logistic regression*.
+<br> Other choices for the family argument can be used to fit other types of *GLMs*. For instance, $family = Gamma$ fits a *gamma regression model* .
+
+
+
+
+
+
